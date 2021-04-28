@@ -1,0 +1,14 @@
+# Third party
+**/node_modules
+
+# Build
+./dist/
+./build/
+./coverage/
+./fixtures/
+
+# Other
+./.docker/
+./.circleci/
+./docs/
+./coverage/

@@ -8,7 +8,8 @@
         "build:prod": "webpack --config tools/webpack/webpack-prod.config.js --color --progress",
         "build:dev": "webpack --config tools/webpack/webpack-dev.config.js --color --progress",
         "lint": "eslint --ignore-path .eslintignore --config .eslintrc.json \"src/**/*.{ts,tsx,js,jsx}\"",
-        "prettify": "prettier \"./**/*.{ts,tsx,js,jsx,json,css,md,markdown,html,yaml,yml}\" --config .prettierrc.json --ignore-path .prettierignore --write"
+        "prettify": "prettier \"./**/*.{ts,tsx,js,jsx,json,css,md,markdown,html,yaml,yml}\" --config .prettierrc.json --ignore-path .prettierignore --write",
+        "prepare": "husky install"
     },
     "author": "",
     "license": "ISC",
@@ -39,12 +40,5 @@
         "react": "^17.0.2",
         "react-dom": "^17.0.2"
     },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "*": ["docker-compose run --rm npm lint", "git add"]
-    }
+    "prepare": "husky install"
 }
