@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import './styles.css';
 
 const title = 'React with Webpack2';
 
