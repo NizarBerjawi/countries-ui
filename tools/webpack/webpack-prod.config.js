@@ -5,10 +5,6 @@ const commonConfig = require('./webpack-common.config.js');
 
 module.exports = merge(commonConfig, {
   mode: 'production',
-  entry: [path.join(process.cwd(), 'src/index')],
-  output: {
-    filename: '[name].js',
-  },
   optimization: {
     minimize: true,
     splitChunks: {

@@ -8,6 +8,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const env = require('dotenv').config().parsed;
 
 module.exports = {
+  entry: [path.join(process.cwd(), 'src/index')],
+  output: {
+    filename: path.join('js', '[name].js'),
+  },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
@@ -25,14 +29,16 @@ module.exports = {
         exclude: /node_modules/,
         use: [
           MiniCssExtractPlugin.loader,
-          'css-loader','postcss-loader', 'sass-loader'
+          'css-loader',
+          'postcss-loader',
+          'sass-loader',
         ],
       },
     ],
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'css/[name].css',
+      filename: path.join('css', '[name].css'),
     }),
     new HtmlWebpackPlugin({
       title: 'Countries Charts',
