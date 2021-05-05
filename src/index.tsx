@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './styles.css';
+import Button from 'react-bootstrap/Button';
+import './styles.scss';
 
-const title = 'React with Webpack2';
-
-ReactDOM.render(<div>{title}</div>, document.getElementById('app'));
+ReactDOM.render(
+  <Button variant='primary'>PRIMARY</Button>,
+  document.getElementById('app'),
+);

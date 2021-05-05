@@ -4,7 +4,7 @@
     "description": "Charts and statistics of country data",
     "main": "index.js",
     "scripts": {
-        "start": "webpack serve --config ./tools/webpack/webpack-dev.config.js --mode development",
+        "start": "webpack serve --config ./tools/webpack/webpack-dev.config.js",
         "build:prod": "NODE_ENV=production webpack --config tools/webpack/webpack-prod.config.js --color --progress",
         "build:dev": "NODE_ENV=development webpack --config tools/webpack/webpack-dev.config.js --color --progress",
         "lint": "eslint --ignore-path .eslintignore --config .eslintrc.json \"src/**/*.{ts,tsx,js,jsx}\"",
@@ -31,11 +31,11 @@
         "html-webpack-plugin": "^5.3.1",
         "husky": "^6.0.0",
         "mini-css-extract-plugin": "^1.6.0",
-        "postcss": "^8.2.13",
         "postcss-loader": "^5.2.0",
         "prettier": "^2.2.1",
+        "sass": "^1.32.12",
+        "sass-loader": "^11.0.1",
         "style-loader": "^2.0.0",
-        "tailwindcss": "^2.1.2",
         "typescript": "^4.2.4",
         "webpack": "^5.35.1",
         "webpack-cli": "^4.6.0",
@@ -43,9 +43,12 @@
         "webpack-merge": "^5.7.3"
     },
     "dependencies": {
+        "bootstrap": "^4.6.0",
+        "classnames": "^2.3.1",
         "dotenv": "^8.2.0",
         "leaflet": "^1.7.1",
         "react": "^17.0.2",
+        "react-bootstrap": "^1.5.2",
         "react-dom": "^17.0.2",
         "react-leaflet": "^3.1.0"
     }

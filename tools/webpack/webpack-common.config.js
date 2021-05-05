@@ -21,27 +21,18 @@ module.exports = {
         },
       },
       {
-        test: /\.css$/,
+        test: /\.(sa|sc|c)ss$/,
         exclude: /node_modules/,
         use: [
           MiniCssExtractPlugin.loader,
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 1,
-            },
-          },
-          {
-            loader: 'postcss-loader',
-          },
+          'css-loader','postcss-loader', 'sass-loader'
         ],
       },
     ],
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'css/styles.css',
-      chunkFilename: 'styles.css',
+      filename: 'css/[name].css',
     }),
     new HtmlWebpackPlugin({
       title: 'Countries Charts',
