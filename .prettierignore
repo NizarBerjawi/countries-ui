@@ -1,2 +1,6 @@
 dist
+build
 coverage
+.env
+.vscode
+node_modules

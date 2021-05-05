@@ -6,13 +6,7 @@ const commonConfig = require('./webpack-common.config.js');
 
 module.exports = merge(commonConfig, {
   mode: 'development',
-
-  // Enable sourcemaps for debugging webpack's output.
   devtool: 'source-map',
-  entry: [path.join(process.cwd(), 'src/index')],
-  output: {
-    filename: '[name].js',
-  },
   optimization: {
     minimize: false,
     splitChunks: {
