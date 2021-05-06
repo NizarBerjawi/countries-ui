@@ -1,9 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Button from 'react-bootstrap/Button';
+import App from './components/App';
 import './styles.scss';
 
-ReactDOM.render(
-  <Button variant='primary'>PRIMARY</Button>,
-  document.getElementById('app'),
-);
+ReactDOM.render(<App />, document.getElementById('app'));
