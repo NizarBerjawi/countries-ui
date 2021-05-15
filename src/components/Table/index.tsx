@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Table as BTable } from 'react-bootstrap';
-import TableProps, { TableRow, TableData } from '../../types/Table';
+import { TableProps, TableRow, TableData } from './Table';
 
 const Table = ({ headers, data, ...rest }: TableProps): ReactElement => (
   <BTable {...rest}>
@@ -17,7 +17,7 @@ const Table = ({ headers, data, ...rest }: TableProps): ReactElement => (
       {data.length > 0 &&
         data.map((row: TableRow, index) => (
           <tr key={index}>
-            {row.map((item: TableData) => (
+            {row.map((item: TableData, index) => (
               <td key={index}>{item}</td>
             ))}
           </tr>

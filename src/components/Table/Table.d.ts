@@ -5,7 +5,7 @@ export type TableHeader = TableHeaderData[];
 export type TableData = number | string;
 export type TableRow = TableData[];
 
-export default interface TableProps extends BTableProps {
+export interface TableProps extends BTableProps {
   headers: TableHeader;
   data: TableRow[];
 }
