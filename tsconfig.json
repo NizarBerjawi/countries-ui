@@ -7,7 +7,13 @@
         "strict": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
-        "jsx": "react"
+        "jsx": "react",
+        "baseUrl": ".",
+        "paths": {
+            "@api/*": ["./src/api/*"],
+            "@components/*": ["./src/components/*"],
+            "@layouts/*": ["./src/layouts/*"]
+        }
     },
     "include": ["./src/**/*"],
     "exclude": ["node_modules", "tools"]

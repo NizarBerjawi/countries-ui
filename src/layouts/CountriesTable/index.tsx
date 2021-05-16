@@ -1,7 +1,7 @@
 import React from 'react';
-import { TableHeader } from '../../components/Table/Table';
-import Table from '../../components/Table';
-import { getCountries } from '../../api/countriesApi';
+import { TableHeader } from '@components/Table/Table';
+import Table from '@components/Table';
+import { getCountries } from '@api/countriesApi';
 import { useQuery } from 'react-query';
 
 const headers: TableHeader = [

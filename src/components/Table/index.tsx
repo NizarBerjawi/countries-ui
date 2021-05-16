@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Table as BTable } from 'react-bootstrap';
-import { TableProps, TableRow, TableData } from './Table';
+import { TableProps, TableRow, TableData } from '@components/Table/Table';
 
 const Table = ({ headers, data, ...rest }: TableProps): ReactElement => (
   <BTable {...rest}>
