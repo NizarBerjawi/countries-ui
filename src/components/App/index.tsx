@@ -14,9 +14,7 @@ const App = (): ReactElement => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Container>
-
-      </Container>
+      <Container></Container>
 
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
