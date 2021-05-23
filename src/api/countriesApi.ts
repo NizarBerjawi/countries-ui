@@ -1,17 +1,10 @@
-import axios, { AxiosResponse } from 'axios';
-import { stringify } from 'qs';
+import http from '@utils/http';
+import { AxiosResponse } from 'axios';
+import { Country, LumenCollectionResponse } from 'src/types';
 
-const getCountries = async (options: {
+const getCountries = async (params: {
   [key: string]: string | number;
-}): Promise<AxiosResponse<unknown>> => {
-  const filters = stringify(options, { addQueryPrefix: true });
-
-  return axios.get(`${process.env.API_URL}/countries${filters}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  });
-};
+}): Promise<AxiosResponse<LumenCollectionResponse<Country>>> =>
+  http.get(`/countries`, { params });
 
 export { getCountries };
