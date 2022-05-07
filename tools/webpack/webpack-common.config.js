@@ -41,7 +41,7 @@ module.exports = {
       filename: path.join('css', '[name].css'),
     }),
     new HtmlWebpackPlugin({
-      title: 'Countries Charts',
+      title: 'Places UI',
       inject: true,
       template: './src/index.html',
     }),

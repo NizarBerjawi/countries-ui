@@ -4,7 +4,7 @@ const { merge } = require('webpack-merge');
 const commonConfig = require('./webpack-common.config.js');
 
 module.exports = merge(commonConfig, {
-  mode: 'production',
+  mode: process.env.NODE_ENV,
   optimization: {
     minimize: true,
     splitChunks: {
