@@ -5,7 +5,7 @@ const { HotModuleReplacementPlugin } = require('webpack');
 const commonConfig = require('./webpack-common.config.js');
 
 module.exports = merge(commonConfig, {
-  mode: 'development',
+  mode: process.env.NODE_ENV,
   devtool: 'source-map',
   optimization: {
     minimize: false,
@@ -22,13 +22,9 @@ module.exports = merge(commonConfig, {
   },
   devServer: {
     historyApiFallback: true,
-    contentBase: path.join(__dirname, './dist'),
     compress: true,
     port: 3000,
     host: '0.0.0.0',
-    disableHostCheck: true,
     historyApiFallback: true,
   },
-
-  plugins: [new HotModuleReplacementPlugin()],
 });
