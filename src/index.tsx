@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import App from '@components/App';
+import App from './containers/App';
 import './styles/vendor.scss';
 
 const element = document.getElementById('app') as HTMLElement;
