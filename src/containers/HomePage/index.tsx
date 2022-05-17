@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
-import { getContinents } from '@api/continentApi';
+import { getPaginatedContinents } from '@api/continentApi';
 import { Continent } from 'src/types';
+import classNames from 'classnames';
 
 const FIRST_PAGE = 1;
 
@@ -14,7 +15,11 @@ const HomePage = () => {
     isPreviousData,
   } = useQuery(
     ['Continents', page],
-    () => getContinents({ page: { number: page } }),
+    () =>
+      getPaginatedContinents({
+        page: { number: page },
+        include: ['countries'],
+      }),
     {
       keepPreviousData: true,
     },
@@ -30,7 +35,8 @@ const HomePage = () => {
 
   if (isLoading) {
     return (
-      <div className='container is-fluid'>index
+      <div className='container is-fluid'>
+        index
         <section className='section'>
           <progress className='progress is-small is-primary' max='100'>
             15%
@@ -49,14 +55,24 @@ const HomePage = () => {
   return (
     <div className='container is-fluid'>
       <section className='section'>
-        <div className='tile is-ancestor'>
-          {continents?.map((continent: Continent) => {
+        <div className='columns is-widescreen'>
+          {continents?.map((continent: Continent, index) => {
             return (
-              <div
-                className='tile is-child is-clickable'
-                key={continent.code}
-              >
-                {continent.name}
+              <div className='column'>
+                <div className='card is-clickable'>
+                  <div className='card-content'>
+                    <p className='title'>{continent.name}</p>
+                    <p className='subtitle'>{continent.code}</p>
+                  </div>
+                  <div className='card-image'>
+                    <figure className='image is-4by3'>
+                      <img
+                        src='https://bulma.io/images/placeholders/1280x960.png'
+                        alt='Placeholder image'
+                      />
+                    </figure>
+                  </div>
+                </div>
               </div>
             );
           })}

@@ -73,7 +73,7 @@ export interface Location {
 export interface Currency {
   code: string;
   name: string;
-  countries?: Country[]
+  countries?: Country[];
 }
 
 export interface Flag {
@@ -121,7 +121,6 @@ export interface Place {
   country?: Country;
   location?: Location;
 }
-
 
 export interface FeatureCode {
   code: string;
