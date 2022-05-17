@@ -20,6 +20,7 @@ const App = (): ReactElement => {
           <Route path='/' element={<HomePage />} />
         </Routes>
       </BrowserRouter>
+
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
