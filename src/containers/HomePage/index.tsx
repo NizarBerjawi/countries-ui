@@ -3,6 +3,7 @@ import { useQuery } from 'react-query';
 import { getPaginatedContinents } from '@api/continentApi';
 import { Continent } from 'src/types';
 import classNames from 'classnames';
+import _ from 'lodash';
 
 const FIRST_PAGE = 1;
 
@@ -36,7 +37,6 @@ const HomePage = () => {
   if (isLoading) {
     return (
       <div className='container is-fluid'>
-        index
         <section className='section'>
           <progress className='progress is-small is-primary' max='100'>
             15%
@@ -52,30 +52,31 @@ const HomePage = () => {
 
   const continents = response?.data.data || [];
 
+  if (continents.length === 0) {
+    return <p>No data found.</p>;
+  }
+
   return (
     <div className='container is-fluid'>
       <section className='section'>
-        <div className='columns is-widescreen'>
-          {continents?.map((continent: Continent, index) => {
-            return (
-              <div className='column'>
-                <div className='card is-clickable'>
-                  <div className='card-content'>
-                    <p className='title'>{continent.name}</p>
-                    <p className='subtitle'>{continent.code}</p>
-                  </div>
-                  <div className='card-image'>
-                    <figure className='image is-4by3'>
-                      <img
-                        src='https://bulma.io/images/placeholders/1280x960.png'
-                        alt='Placeholder image'
-                      />
-                    </figure>
-                  </div>
+        <div className='columns is-widescreen is-multiline is-centered'>
+          {continents.map((continent: Continent) => (
+            <div className='column is-one-third'>
+              <div className='card is-clickable'>
+                <div className='card-content'>
+                  <p className='title'>{continent.name}</p>
+                </div>
+                <div className='card-image'>
+                  <figure className='image is-4by3'>
+                    <img
+                      src='https://bulma.io/images/placeholders/1280x960.png'
+                      alt='Placeholder image'
+                    />
+                  </figure>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
 
         {hasMore() && (
