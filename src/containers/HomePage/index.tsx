@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { getPaginatedContinents } from '@api/continentApi';
 import { Continent } from 'src/types';
-import classNames from 'classnames';
-import _ from 'lodash';
 
 const FIRST_PAGE = 1;
 
@@ -61,7 +59,7 @@ const HomePage = () => {
       <section className='section'>
         <div className='columns is-widescreen is-multiline is-centered'>
           {continents.map((continent: Continent) => (
-            <div className='column is-one-third'>
+            <div key={continent.code} className='column is-one-third'>
               <div className='card is-clickable'>
                 <div className='card-content'>
                   <p className='title'>{continent.name}</p>
