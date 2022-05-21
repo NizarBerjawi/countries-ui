@@ -1,7 +1,8 @@
 import http from '@utils/http';
 import { AxiosResponse } from 'axios';
-import { Country, LumenCollectionResponse, LumenQuery } from 'src/types';
 import { stringify } from 'qs';
+import { LumenQuery, LumenCollectionResponse } from 'src/types/api';
+import { Country } from 'src/types/app';
 
 const getPaginatedCountries = async (
   params: LumenQuery,

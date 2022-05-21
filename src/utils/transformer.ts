@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { LumenCollection, LumenResource } from 'src/types';
+import { LumenResource, LumenCollection } from 'src/types/api';
 
 // Transform any fetched data
 const fetch = (
