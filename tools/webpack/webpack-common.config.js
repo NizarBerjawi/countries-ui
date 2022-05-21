@@ -37,7 +37,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       title: 'Places UI',
-      inject: true,
+      inject: 'body',
       template: './src/index.html',
     }),
     new webpack.EnvironmentPlugin(env),
