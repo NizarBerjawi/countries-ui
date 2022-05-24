@@ -11,6 +11,7 @@ module.exports = {
   entry: [path.join(process.cwd(), 'src/index')],
   output: {
     filename: path.join('js', '[name].js'),
+    assetModuleFilename: 'images/[hash][ext][query]',
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
@@ -28,6 +29,10 @@ module.exports = {
         test: /\.(sa|sc|c)ss$/,
         exclude: /node_modules/,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+      },
+      {
+        test: /\.(png|gif|jpe?g|svg)$/,
+        type: 'asset/resource',
       },
     ],
   },

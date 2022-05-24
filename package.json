@@ -36,6 +36,7 @@
         "eslint-import-resolver-typescript": "^2.7.1",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-react": "^7.29.4",
+        "file-loader": "^6.2.0",
         "html-webpack-plugin": "^5.5.0",
         "husky": "^7.0.4",
         "mini-css-extract-plugin": "^2.6.0",
@@ -50,6 +51,7 @@
         "webpack-merge": "^5.8.0"
     },
     "dependencies": {
+        "@types/feather-icons": "^4.7.0",
         "axios": "^0.27.2",
         "bulma": "^0.9.3",
         "classnames": "^2.3.1",

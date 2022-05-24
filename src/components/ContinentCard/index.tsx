@@ -1,34 +1,45 @@
 import React from 'react';
 import { Continent } from 'src/types/app';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { LatLngTuple } from 'leaflet';
+import { MapContainer, FeatureGroup } from 'react-leaflet';
+import { PathOptions } from 'leaflet';
+import geoJsonData from '../../data/world-110m.json';
+import continentLocations from '../../data/continent_locations.json';
+import { GeoJSON } from 'react-leaflet';
+import _ from 'lodash';
 
 interface IContinentCardProps {
   continent: Continent;
 }
-const position: LatLngTuple = [51.505, -0.09];
+const redOptions: PathOptions = { color: 'red' };
 
-const ContinentCard = ({ continent }: IContinentCardProps) => (
-  <div className='column is-one-third'>
+const getGeoJsonData = () => {
+  _.groupBy(geoJsonData, )
+}
+
+const ContinentCard = ({ continent }: IContinentCardProps) => {
+
+  const continentData = geoJsonData.features.filter((data) => data.properties.CONTINENT ===  continent.name);
+
+  return <div className='column is-one-third'>
     <div className='card is-clickable'>
       <div className='card-content'>
         <p className='title'>{continent.name}</p>
       </div>
+
       <div className='card-image'>
-          <MapContainer className='image is-4by3' center={position} zoom={13} scrollWheelZoom={false}>
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-            />
-            <Marker position={position}>
-              <Popup>
-                A pretty CSS3 popup. <br /> Easily customizable.
-              </Popup>
-            </Marker>
-          </MapContainer>
+        <MapContainer
+          center={continentLocations[continent.code]}
+          zoom={3}
+          scrollWheelZoom={false}
+          className='image is-4by3'
+        >
+          <FeatureGroup pathOptions={redOptions}>
+            <GeoJSON data={continentData} />
+          </FeatureGroup>
+        </MapContainer>
       </div>
     </div>
   </div>
-);
+};
 
 export default ContinentCard;

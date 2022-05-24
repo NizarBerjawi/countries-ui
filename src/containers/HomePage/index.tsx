@@ -36,7 +36,7 @@ const HomePage = () => {
   };
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <progress className="progress is-small is-primary" max="100">15%</progress>;
   }
 
   if (isError) {
@@ -54,7 +54,7 @@ const HomePage = () => {
       <section className='section'>
         <CardList centered>
           {continents.map((continent: Continent) => (
-            <ContinentCard continent={continent} />
+            <ContinentCard key={continent.code} continent={continent} />
           ))}
         </CardList>
 
