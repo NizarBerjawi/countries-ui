@@ -1,8 +1,12 @@
-import { BulmaTagSize } from 'src/types/bulma';
-import { TagSize } from 'src/types/styles';
+import { BulmaProgressSize, BulmaTagSize } from 'src/types/bulma';
+import { ProgressSize, TagSize } from 'src/types/styles';
 
-const resolveSize = (size?: TagSize): BulmaTagSize => {
+const resolveSize = (
+  size: TagSize | ProgressSize,
+): BulmaTagSize | BulmaProgressSize => {
   switch (size) {
+    case 'small':
+      return 'is-small';
     case 'normal':
       return 'is-normal';
     case 'medium':

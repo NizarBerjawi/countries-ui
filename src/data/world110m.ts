@@ -1,4 +1,6 @@
-{
+import type { FeatureCollection } from 'geojson';
+
+const world110m: FeatureCollection = {
   "type": "FeatureCollection",
   "features": [
     {
@@ -47470,4 +47472,6 @@
       }
     }
   ]
-}
+};
+
+export default world110m;

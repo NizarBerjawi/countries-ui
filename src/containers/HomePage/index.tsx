@@ -5,6 +5,8 @@ import { Continent } from 'src/types/app';
 import LoadMore from '@components/LoadMore';
 import ContinentCard from '@components/ContinentCard';
 import CardList from '@components/CardList';
+import world110m from '../../data/world110m';
+import ProgressBar from '@components/ProgressBar';
 
 const FIRST_PAGE = 1;
 
@@ -20,7 +22,7 @@ const HomePage = () => {
     () =>
       getPaginatedContinents({
         page: { number: page },
-        include: ['countries'],
+        include: 'countries',
       }),
     {
       keepPreviousData: true,
@@ -36,7 +38,9 @@ const HomePage = () => {
   };
 
   if (isLoading) {
-    return <progress className="progress is-small is-primary" max="100">15%</progress>;
+    return (
+      <ProgressBar size='small' color='primary' max='100' percentage='15%' />
+    );
   }
 
   if (isError) {
@@ -53,9 +57,24 @@ const HomePage = () => {
     <div className='container is-fluid'>
       <section className='section'>
         <CardList centered>
-          {continents.map((continent: Continent) => (
-            <ContinentCard key={continent.code} continent={continent} />
-          ))}
+          {continents.map((continent: Continent) => {
+            const continentFeatures = world110m.features.filter(
+              (data) => data.properties?.CONTINENT === continent.name,
+            );
+
+            const featureCollection = {
+              ...world110m,
+              features: continentFeatures,
+            };
+
+            return (
+              <ContinentCard
+                key={continent.code}
+                continent={continent}
+                data={featureCollection}
+              />
+            );
+          })}
         </CardList>
 
         {hasMore() && (

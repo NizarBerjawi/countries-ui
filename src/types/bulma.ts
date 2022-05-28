@@ -11,3 +11,8 @@ export type BulmaColor =
   | 'is-danger';
 
 export type BulmaTagSize = 'is-normal' | 'is-medium' | 'is-large';
+export type BulmaProgressSize =
+  | 'is-small'
+  | 'is-normal'
+  | 'is-medium'
+  | 'is-large';

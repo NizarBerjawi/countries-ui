@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import feather from 'feather-icons';
+import { replace } from 'feather-icons';
 
 interface IIconProps {
   name: string;
@@ -7,7 +7,7 @@ interface IIconProps {
 
 const Icon = (props: IIconProps) => {
   useEffect(() => {
-    feather.replace();
+    replace();
   });
 
   return <i data-feather={props.name} />;

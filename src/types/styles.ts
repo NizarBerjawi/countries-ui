@@ -12,3 +12,4 @@ export type Color =
   | 'primary';
 
 export type TagSize = 'normal' | 'medium' | 'large';
+export type ProgressSize = 'small' | 'normal' | 'medium' | 'large';

@@ -16,6 +16,7 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@babel/core": "^7.18.0",
         "@babel/plugin-transform-runtime": "^7.17.10",
         "@babel/preset-env": "^7.17.10",
         "@babel/preset-react": "^7.16.7",
@@ -52,6 +53,7 @@
     },
     "dependencies": {
         "@types/feather-icons": "^4.7.0",
+        "@types/geojson": "^7946.0.8",
         "axios": "^0.27.2",
         "bulma": "^0.9.3",
         "classnames": "^2.3.1",
