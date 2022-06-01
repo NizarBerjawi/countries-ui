@@ -4,6 +4,7 @@
 dist
 node_modules
 npm-debug.log
+./app
 **/.git
 **/.DS_Store
 **/node_modules

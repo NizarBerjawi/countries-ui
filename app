@@ -1,10 +1,16 @@
 #!/bin/bash
 
+APP_NAME=places-ui
+APP_PORT=3000
+HOST_PORT=3000
 USERNAME=${USER}
 GROUP_ID=$(id -g $USER)
 USER_ID=$(id -u $USER)
-WORKING_DIR=/app
-IMAGE_TAG=${USERNAME}-place-ui
+GIT_USER=$(git config --local user.name)
+GIT_EMAIL=$(git config --local user.email)
+IMAGE_TAG=${USERNAME}-${APP_NAME}
+WORKING_DIR=/${APP_NAME}
+
 
 COMMON_SCRIPT="deluser --remove-home node \
     && addgroup \
@@ -19,61 +25,104 @@ COMMON_SCRIPT="deluser --remove-home node \
 
 # Builds a docker image for the PlacesUI application
 docker_build() {
-  docker build -f ${PWD}/.docker/node/dev.Dockerfile -t ${IMAGE_TAG} ${PWD}
+  docker build \
+    --file ${PWD}/.docker/node/dev.Dockerfile \
+    --build-arg USER=${USERNAME} \
+    --build-arg GID=${GROUP_ID} \
+    --build-arg UID=${USER_ID} \
+    --tag ${IMAGE_TAG} \
+    ${PWD}
 }
 
-# Allows user to execute npm scripts inside the PlacesUI docker image
-npm() {
-  # If the image does not already exist, build it
+# Checks if a the docker image exists
+docker_check_image() {
   if [[ "$(docker images -q ${IMAGE_TAG} 2>/dev/null)" == "" ]]; then
     docker_build
   fi
+}
 
-  # Capture the arguments passed by the user
+# Run npm commands inside the development container
+npm() {
+  docker_check_image
+
+  docker run \
+    --interactive \
+    --tty \
+    --rm \
+    --volume "${PWD}:${WORKING_DIR}" \
+    --workdir ${WORKING_DIR} \
+    ${IMAGE_TAG} \
+    npm "${@}"
+}
+
+# Run git commands inside the development container
+git() {
+  docker_check_image
+  
+  if [[ -z "$GIT_USER" ]]; then
+    IFS= read -r -p "Please enter a git username:" username
+  else
+    username=$GIT_USER
+  fi
+
+  if [[ -z "$GIT_EMAIL" ]]; then
+    IFS= read -r -p "Please enter a git user email:" email
+  else
+    email=$GIT_EMAIL
+  fi
+
   args="${@}"
 
-  docker run -it --rm -v "${PWD}:${WORKING_DIR}" -w ${WORKING_DIR} ${IMAGE_TAG} \
-    sh -c "${COMMON_SCRIPT} \
-    -c 'npm ${args}'"
+  docker run \
+    --interactive \
+    --tty \
+    --rm \
+    --volume "${PWD}:${WORKING_DIR}" \
+    --workdir ${WORKING_DIR} \
+    ${IMAGE_TAG} \
+    sh -c "git config --local user.name '$username' \
+      && git config --local user.email '$email' \
+      && git ${args}"
 }
 
+# Start the app
 start() {
-  # If the image does not already exist, build it
-  if [[ "$(docker images -q ${IMAGE_TAG} 2>/dev/null)" == "" ]]; then
-    docker_build
+  docker_check_image
+
+  if [ ! -f "${PWD}/.env" ]; then
+    echo "Environment variables file not found."
+    exit 1;
   fi
 
-  docker run -it --rm -p 3000:3000 -v "${PWD}:${WORKING_DIR}" -w ${WORKING_DIR} ${IMAGE_TAG} \
-    sh -c "${COMMON_SCRIPT} \
-    -c 'npm start'"
+  if [ ! -d "${PWD}/node_modules" ]; then
+    ./app npm install
+  fi
+
+  docker run \
+    --interactive \
+    --tty \
+    --rm \
+    --publish ${HOST_PORT}:${APP_PORT} \
+    --volume "${PWD}:${WORKING_DIR}" \
+    --workdir ${WORKING_DIR} \
+    ${IMAGE_TAG} \
+    npm start
 }
 
 shell() {
-    # If the image does not already exist, build it
-  if [[ "$(docker images -q ${IMAGE_TAG} 2>/dev/null)" == "" ]]; then
-    docker_build
-  fi
+  docker_check_image
 
-  # Capture the arguments passed by the user
-  args="${@}"
-
-  docker run -it --rm -v "${PWD}:${WORKING_DIR}" -w ${WORKING_DIR} ${IMAGE_TAG} \
-    sh -c "${COMMON_SCRIPT}"
+  docker run \
+    --interactive \
+    --tty \
+    --rm \
+    --volume "${PWD}:${WORKING_DIR}" \
+    --workdir ${WORKING_DIR} \
+    ${IMAGE_TAG} \
+    sh
 }
 
-# main function
-
 case $1 in
-  "docker")
-    case $2 in
-      "build")
-        docker_build
-        ;;
-      *)
-        exit 1
-        ;;
-      esac
-      ;;
   "npm")
     case $2 in
       "start")
@@ -87,7 +136,15 @@ case $1 in
         ;;
       esac
       ;;
+  "git")
+    case $2 in
+    *)
+      shift
+      git $@
+      ;;
+    esac
+    ;;
   *)
-    shell
+    shell $@
     ;;
   esac
