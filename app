@@ -60,13 +60,13 @@ git() {
   docker_check_image
   
   if [[ -z "$GIT_USER" ]]; then
-    IFS= read -r -p "Please enter a git username:" username
+    IFS= read -r -p "Please enter a git username: " username
   else
     username=$GIT_USER
   fi
 
   if [[ -z "$GIT_EMAIL" ]]; then
-    IFS= read -r -p "Please enter a git user email:" email
+    IFS= read -r -p "Please enter a git user email: " email
   else
     email=$GIT_EMAIL
   fi
@@ -123,6 +123,9 @@ shell() {
 }
 
 case $1 in
+  "start")
+    start
+    ;;
   "npm")
     case $2 in
       "start")
