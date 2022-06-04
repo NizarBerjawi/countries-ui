@@ -1,5 +1,12 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npm run prettify
-npm run lint
+if [[ ! $(cat /proc/1/sched | head -n 1 | grep init) ]]; then {
+    # If the user is committing inside the docker container
+    npm run prettify
+    npm run lint
+} else {
+    # If the user is committing on their local machine
+    ./app prettify
+    ./app lint
+} fi

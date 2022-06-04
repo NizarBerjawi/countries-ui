@@ -54,7 +54,7 @@ const HomePage = () => {
       <section className='section'>
         <CardList centered>
           {continents.map((continent: Continent) => (
-            <ContinentCard continent={continent} />
+            <ContinentCard key={continent.code} continent={continent} />
           ))}
         </CardList>
 
