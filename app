@@ -1,7 +1,6 @@
 #!/bin/bash
 
 APP_NAME=places-ui
-DEFAULT_APP_PORT=3000
 DEFAULT_HOST_PORT=3000
 USERNAME=${USER}
 GROUP_ID=$(id -g $USER)
@@ -13,19 +12,33 @@ WORKING_DIR=/${APP_NAME}
 
 # Builds a docker image for the PlacesUI application
 docker_build() {
-  docker build \
-    --file ${PWD}/.docker/node/dev.Dockerfile \
-    --build-arg USER=${USERNAME} \
-    --build-arg GID=${GROUP_ID} \
-    --build-arg UID=${USER_ID} \
-    --tag ${IMAGE_TAG} \
-    ${PWD}
+  case $1 in
+    "prod")
+      docker build \
+        --file ${PWD}/.docker/${1}.Dockerfile \
+        --tag ${IMAGE_TAG}-${1} \
+        ${PWD}
+      ;;
+    "dev")
+      docker build \
+        --file ${PWD}/.docker/${1}.Dockerfile \
+        --build-arg USER=${USERNAME} \
+        --build-arg GID=${GROUP_ID} \
+        --build-arg UID=${USER_ID} \
+        --tag ${IMAGE_TAG}-${1} \
+        ${PWD}
+      ;;
+    *)
+      echo "Invalid environment specified. Exiting..."
+      exit 0
+      ;;
+  esac
 }
 
 # Checks if a the docker image exists
 docker_check_image() {
-  if [[ "$(docker images -q ${IMAGE_TAG} 2>/dev/null)" == "" ]]; then
-    docker_build
+  if [[ "$(docker images -q ${IMAGE_TAG}-${1} 2>/dev/null)" == "" ]]; then
+    docker_build $1
   fi
 }
 
@@ -69,7 +82,7 @@ check_port() {
 
 # Run npm commands inside the development container
 npm() {
-  docker_check_image
+  docker_check_image dev
 
   docker run \
     --interactive \
@@ -77,13 +90,13 @@ npm() {
     --rm \
     --volume "${PWD}:${WORKING_DIR}" \
     --workdir ${WORKING_DIR} \
-    ${IMAGE_TAG} \
+    ${IMAGE_TAG}-dev \
     npm "${@}"
 }
 
 # Run git commands inside the development container
 git() {
-  docker_check_image
+  docker_check_image dev
   
   if [[ -z "$GIT_USER" ]]; then
     IFS= read -r -p "Please enter a git username: " username
@@ -104,33 +117,50 @@ git() {
     --rm \
     --volume "${PWD}:${WORKING_DIR}" \
     --workdir ${WORKING_DIR} \
-    ${IMAGE_TAG} \
+    ${IMAGE_TAG}-dev \
     sh -c "${GIT_SCRIPT} && git ${args}"
 }
 
 # Start the app
 start() {
-  docker_check_image
+  env=${2:-"dev"}
+  
+  docker_check_image ${env}
 
   check_env_file
-
-  check_node_modules
+  if [[ ${env} == "dev" ]]; then
+    check_node_modules
+  fi
 
   check_port
 
-  docker run \
-    --interactive \
-    --tty \
-    --rm \
-    --publish ${port:-$DEFAULT_HOST_PORT}:${DEFAULT_APP_PORT} \
-    --volume "${PWD}:${WORKING_DIR}" \
-    --workdir ${WORKING_DIR} \
-    ${IMAGE_TAG} \
-    npm start
+  case $env in
+    "prod")
+      docker run \
+        --interactive \
+        --tty \
+        --rm \
+        --publish ${port:-$DEFAULT_HOST_PORT}:80 \
+        ${IMAGE_TAG}-${env}
+      ;;
+    *)
+      docker run \
+        --interactive \
+        --tty \
+        --rm \
+        --publish ${port:-$DEFAULT_HOST_PORT}:3000 \
+        --volume "${PWD}:${WORKING_DIR}" \
+        --workdir ${WORKING_DIR} \
+        ${IMAGE_TAG}-${env} \
+        npm start
+      ;;
+    esac
+
+  
 }
 
 shell() {
-  docker_check_image
+  docker_check_image dev
 
   docker run \
     --interactive \
@@ -138,35 +168,35 @@ shell() {
     --rm \
     --volume "${PWD}:${WORKING_DIR}" \
     --workdir ${WORKING_DIR} \
-    ${IMAGE_TAG} \
+    ${IMAGE_TAG}-dev \
     sh
 }
 
 lint() {
-  docker_check_image
+  docker_check_image dev
 
   docker run \
     --rm \
     --volume "${PWD}:${WORKING_DIR}" \
     --workdir ${WORKING_DIR} \
-    ${IMAGE_TAG} \
+    ${IMAGE_TAG}-dev \
     npm run lint
 }
 
 prettify() {
-  docker_check_image
+  docker_check_image dev
 
   docker run \
     --rm \
     --volume "${PWD}:${WORKING_DIR}" \
     --workdir ${WORKING_DIR} \
-    ${IMAGE_TAG} \
+    ${IMAGE_TAG}-dev \
     npm run prettify
 }
 
 case $1 in
   "start")
-    start
+    start $@
     ;;
   "npm")
     case $2 in
