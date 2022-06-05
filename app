@@ -62,7 +62,6 @@ check_env_file() {
         break;;
       *)
     esac
-
     done
   fi
 }
@@ -97,7 +96,6 @@ npm() {
 # Run git commands inside the development container
 git() {
   docker_check_image dev
-
   if [[ -z "$GIT_USER" ]]; then
     IFS= read -r -p "Please enter a git username: " username
   fi
@@ -124,7 +122,6 @@ git() {
 # Start the app
 start() {
   env=${2:-"dev"}
-
   docker_check_image ${env}
 
   check_env_file
@@ -155,12 +152,9 @@ start() {
         npm start
       ;;
     esac
-
-
 }
 
 shell() {
-  echo "shell"
   docker_check_image dev
 
   docker run \
