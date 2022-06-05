@@ -1,5 +1,3 @@
-import { resolveColor } from '@utils/styles';
-import resolveSize from '@utils/styles/resolveSize';
 import classNames from 'classnames';
 import React, { MouseEventHandler } from 'react';
 import { Color, TagSize } from 'src/types/styles';
@@ -15,12 +13,10 @@ const LoadMore = ({ size, color, label, onClick }: ILoadMoreProps) => {
   return (
     <div className='is-flex is-flex-direction-row is-justify-content-center'>
       <span
-        className={classNames(
-          'tag',
-          'is-clickable',
-          resolveSize(size),
-          resolveColor(color),
-        )}
+        className={classNames('tag', 'is-clickable', {
+          [`is-${size}`]: !!size,
+          [`is-${color}`]: !!color,
+        })}
         onClick={onClick}
       >
         {label}

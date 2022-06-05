@@ -1,5 +1,3 @@
-import { resolveColor } from '@utils/styles';
-import resolveSize from '@utils/styles/resolveSize';
 import classNames from 'classnames';
 import React from 'react';
 import { Color, ProgressSize } from 'src/types/styles';
@@ -14,7 +12,11 @@ interface IProgressBarProps {
 const ProgressBar = ({ size, color, percentage, max }: IProgressBarProps) => {
   return (
     <progress
-      className={classNames('progress', resolveSize(size), resolveColor(color))}
+      className={classNames({
+        progress: true,
+        [`is-${size}`]: !!size,
+        [`is-${color}`]: !!color,
+      })}
       max={max}
     >
       {percentage}
