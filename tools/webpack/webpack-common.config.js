@@ -11,6 +11,7 @@ module.exports = {
   entry: [path.join(process.cwd(), 'src/index')],
   output: {
     filename: path.join('js', '[name].js'),
+    assetModuleFilename: 'images/[hash][ext][query]',
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
@@ -29,6 +30,10 @@ module.exports = {
         exclude: /node_modules/,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
       },
+      {
+        test: /\.(png|gif|jpe?g|svg)$/,
+        type: 'asset/resource',
+      },
     ],
   },
   plugins: [
@@ -37,7 +42,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       title: 'Places UI',
-      inject: true,
+      inject: 'body',
       template: './src/index.html',
     }),
     new webpack.EnvironmentPlugin(env),

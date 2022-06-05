@@ -3,7 +3,12 @@ import { createRoot } from 'react-dom/client';
 import App from './containers/App';
 import './styles/vendor.scss';
 
-const element = document.getElementById('app') as HTMLElement;
-const root = createRoot(element);
+const element: HTMLElement | null = document.getElementById('app');
 
-root.render(<App />);
+if (element) {
+  const root = createRoot(element);
+
+  root.render(<App />);
+}
+
+console.error('DOM element not found.');

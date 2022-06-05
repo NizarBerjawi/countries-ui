@@ -25,6 +25,5 @@ module.exports = merge(commonConfig, {
     compress: true,
     port: 3000,
     host: '0.0.0.0',
-    historyApiFallback: true,
   },
 });

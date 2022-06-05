@@ -30,7 +30,7 @@ export type LumenResourceResponse<T> = {
 };
 
 export type LumenQuery = {
-  include?: string[];
+  include?: string | string[];
   filter?: {
     [key: string]: string;
   };

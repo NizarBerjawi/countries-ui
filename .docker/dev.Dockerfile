@@ -17,12 +17,12 @@ RUN deluser \
 
 RUN addgroup --gid ${GID} ${USER}
 RUN adduser \
-  --ingroup ${USER} \ 
+  --ingroup ${USER} \
   --gecos ${USER} \
   --uid ${UID} \
   --shell /bin/sh \
   --disabled-password ${USER}
-  
+
 WORKDIR /places-ui
 
 USER ${USER}
