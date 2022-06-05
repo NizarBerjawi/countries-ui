@@ -7,6 +7,7 @@ import ContinentCard from '@components/ContinentCard';
 import CardList from '@components/CardList';
 import world110m from '../../data/world110m';
 import ProgressBar from '@components/ProgressBar';
+import NavBar from '@components/NavBar';
 
 const FIRST_PAGE = 1;
 
@@ -55,6 +56,7 @@ const HomePage = () => {
 
   return (
     <div className='container is-fluid'>
+      <NavBar hasBrand />
       <section className='section'>
         <CardList centered>
           {continents.map((continent: Continent) => {
