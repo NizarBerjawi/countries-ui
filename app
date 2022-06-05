@@ -5,8 +5,8 @@ DEFAULT_HOST_PORT=3000
 USERNAME=${USER}
 GROUP_ID=$(id -g $USER)
 USER_ID=$(id -u $USER)
-GIT_USER=$(git config --global user.name)
-GIT_EMAIL=$(git config --global user.email)
+GIT_USER=$(git config --local user.name)
+GIT_EMAIL=$(git config --local user.email)
 IMAGE_TAG=${USERNAME}-${APP_NAME}
 WORKING_DIR=/${APP_NAME}
 
@@ -106,8 +106,8 @@ git() {
     IFS= read -r -p "Please enter a git user email: " email
   fi
 
-  GIT_SCRIPT="git config --global user.name '${username:-$GIT_USER}' \
-      && git config --global user.email '${email:-$GIT_EMAIL}'"
+  GIT_SCRIPT="git config --local user.name '${username:-$GIT_USER}' \
+      && git config --local user.email '${email:-$GIT_EMAIL}'"
 
   args="${@}"
 
