@@ -1,11 +1,20 @@
-import React, { PropsWithChildren } from 'react';
+import classNames from 'classnames';
+import React, { MouseEventHandler } from 'react';
 
-const NavBarBurger = () => (
+export interface INavBarBurger {
+  isActive: boolean;
+  onClick: MouseEventHandler<HTMLAnchorElement>;
+}
+
+const NavBarBurger = ({ isActive, onClick }: INavBarBurger) => (
   <a
     role='button'
-    className='navbar-burger'
+    className={classNames('navbar-burger', {
+      'is-active': isActive,
+    })}
     aria-label='menu'
     aria-expanded='false'
+    onClick={onClick}
   >
     <span aria-hidden='true'></span>
     <span aria-hidden='true'></span>

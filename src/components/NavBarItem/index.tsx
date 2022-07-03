@@ -1,27 +1,29 @@
 import classNames from 'classnames';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, MouseEventHandler } from 'react';
 
-interface INavBarItem {
+export interface INavBarItem {
   path?: HTMLAnchorElement['href'];
   label?: HTMLAnchorElement['text'];
   hasDropdown?: boolean;
   isBrand?: boolean;
-  isHoverable?: boolean;
+  isActive?: boolean;
 }
 
 const NavBarItem = (props: PropsWithChildren<INavBarItem>) => {
-  const { path, label, hasDropdown, isBrand, isHoverable, children } = props;
+  const { path, label, hasDropdown, isBrand, isActive, children } =
+    props;
+
   if (hasDropdown) {
     return (
       <div
         className={classNames('navbar-item', {
           'has-dropdown': !!hasDropdown,
-          'is-hoverable': !!isHoverable,
+          'is-active': isActive,
         })}
       >
         <a className='navbar-link'>{label}</a>
 
-        <div className='navbar-dropdown'>{children}</div>
+        {isActive && <div className='navbar-dropdown'>{children}</div>}
       </div>
     );
   }

@@ -1,42 +1,53 @@
 import NavBarBurger from '@components/NavBarBurger';
-import NavBarItem from '@components/NavBarItem';
-import React, { PropsWithChildren } from 'react';
+import NavBarItem, { INavBarItem } from '@components/NavBarItem';
+import classNames from 'classnames';
+import React, { MouseEventHandler, PropsWithChildren, useState } from 'react';
 
-interface INavBar {
+export interface INavBar {
+  links: INavBarItem[];
   hasBrand?: boolean;
 }
 
-const NavBar = (props: PropsWithChildren<INavBar>) => (
-  <nav className='navbar' role='navigation' aria-label='main navigation'>
-    {props.hasBrand && (
-      <div className='navbar-brand'>
-        <NavBarItem path='https://bulma.io' isBrand>
-          <img
-            src='https://bulma.io/images/bulma-logo.png'
-            width='112'
-            height='28'
-          />
-        </NavBarItem>
+const NavBar = (props: PropsWithChildren<INavBar>) => {
+  const [open, setOpen] = useState(false);
 
-        <NavBarBurger />
+  const { links, hasBrand } = props;
+
+  const handleBurgerClick: MouseEventHandler<HTMLAnchorElement> = (event) => {
+    event.preventDefault();
+
+    setOpen(!open);
+  };
+
+  return (
+    <nav className='navbar' role='navigation' aria-label='main navigation'>
+      {hasBrand && (
+        <div className='navbar-brand'>
+          <NavBarItem path='/' isBrand>
+            <img
+              src='https://bulma.io/images/bulma-logo.png'
+              width='112'
+              height='28'
+            />
+          </NavBarItem>
+
+          <NavBarBurger isActive={open} onClick={handleBurgerClick} />
+        </div>
+      )}
+
+      <div
+        className={classNames('navbar-menu', {
+          'is-active': open,
+        })}
+      >
+        <div className='navbar-start'>
+          {links.map((item: INavBarItem, index) => (
+            <NavBarItem key={index} path={item.path} label={item.label} />
+          ))}
+        </div>
       </div>
-    )}
-
-    <div className='navbar-menu'>
-      <div className='navbar-start'>
-        <NavBarItem path='/home' label='Home' />
-        <NavBarItem path='/continents' label='Continents' />
-        <NavBarItem path='/countries' label='Countries' />
-        <NavBarItem path='/langauges' label='Languages' />
-        <NavBarItem path='/currencies' label='Currencies' />
-        <NavBarItem path='/timeZones' label='Time Zones' />
-
-        <NavBarItem hasDropdown isHoverable label='More'>
-          <NavBarItem path='/statistics' label='Statistics' />
-        </NavBarItem>
-      </div>
-    </div>
-  </nav>
-);
+    </nav>
+  );
+};
 
 export default NavBar;
