@@ -7,8 +7,19 @@ import ContinentCard from '@components/ContinentCard';
 import CardList from '@components/CardList';
 import world110m from '../../data/world110m';
 import ProgressBar from '@components/ProgressBar';
+import NavBar from '@components/NavBar';
+import { INavBarItem } from '@components/NavBarItem';
 
 const FIRST_PAGE = 1;
+const LINKS: INavBarItem[] = [
+  { path: '/', label: 'Home' },
+  { path: '/continents', label: 'Continents' },
+  { path: '/countries', label: 'Countries' },
+  { path: '/languages', label: 'Languages' },
+  { path: '/currencies', label: 'Currencies' },
+  { path: '/timeZones', label: 'Time Zones' },
+  { path: '/statistics', label: 'Statistics' },
+];
 
 const HomePage = () => {
   const [page, setPage] = useState(FIRST_PAGE);
@@ -55,6 +66,7 @@ const HomePage = () => {
 
   return (
     <div className='container is-fluid'>
+      <NavBar hasBrand links={LINKS} />
       <section className='section'>
         <CardList centered>
           {continents.map((continent: Continent) => {
