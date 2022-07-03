@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { PropsWithChildren, MouseEventHandler } from 'react';
+import React, { PropsWithChildren } from 'react';
 
 export interface INavBarItem {
   path?: HTMLAnchorElement['href'];
@@ -10,8 +10,7 @@ export interface INavBarItem {
 }
 
 const NavBarItem = (props: PropsWithChildren<INavBarItem>) => {
-  const { path, label, hasDropdown, isBrand, isActive, children } =
-    props;
+  const { path, label, hasDropdown, isBrand, isActive, children } = props;
 
   if (hasDropdown) {
     return (
