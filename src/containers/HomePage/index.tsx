@@ -4,13 +4,10 @@ import { getPaginatedContinents } from '@api/continentApi';
 import { getPaginatedCountries } from '@api/countriesApi';
 import { Continent, Country } from 'src/types/app';
 import LoadMore from '@components/LoadMore';
-import ContinentCard from '@components/ContinentCard';
-import CardList from '@components/CardList';
-import world110m from '../../data/world110m';
 import ProgressBar from '@components/ProgressBar';
 import NavBar from '@components/NavBar';
 import { INavBarItem } from '@components/NavBarItem';
-import Table, {TableHeader} from '@components/Table';
+import Table, { TableHeader } from '@components/Table';
 
 const FIRST_PAGE = 1;
 const LINKS: INavBarItem[] = [
@@ -77,7 +74,6 @@ const HomePage = () => {
     }
   };
 
-
   if (continentsQuery.isLoading && countriesQuery.isLoading) {
     return (
       <ProgressBar size='small' color='primary' max='100' percentage='15%' />
@@ -97,13 +93,15 @@ const HomePage = () => {
               <article className='tile is-child notification'>
                 <p className='title'>Countries</p>
                 <Table
-                  headers={[
-                    { key: 'iso3166Alpha2', name: 'ISO 3166-2' },
-                    { key: 'name', name: 'Name' },
-                    { key: 'population', name: 'Population' },
-                    { key: 'area', name: 'Area' },
-                    { key: 'phoneCode', name: 'Phone Code' },
-                  ] as TableHeader<Continent | Country>[]}
+                  headers={
+                    [
+                      { key: 'iso3166Alpha2', name: 'ISO 3166-2' },
+                      { key: 'name', name: 'Name' },
+                      { key: 'population', name: 'Population' },
+                      { key: 'area', name: 'Area' },
+                      { key: 'phoneCode', name: 'Phone Code' },
+                    ] as TableHeader<Continent | Country>[]
+                  }
                   data={countries}
                 />
 
