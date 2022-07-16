@@ -3,10 +3,8 @@
 
 if [[ ! $(cat /proc/1/sched | head -n 1 | grep init) ]]; then {
     # If the user is committing inside the docker container
-    npm run prettify
-    npm run lint
+    ./node_modules/.bin/lint-staged
 } else {
     # If the user is committing on their local machine
-    ./app prettify
-    ./app lint
+    ./app lint-staged
 } fi

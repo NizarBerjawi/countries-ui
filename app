@@ -178,6 +178,19 @@ lint() {
     npm run lint
 }
 
+lint_staged() {
+  docker_check_image dev
+
+  docker run \
+    --interactive \
+    --tty \
+    --rm \
+    --volume "${PWD}:${WORKING_DIR}" \
+    --workdir ${WORKING_DIR} \
+    ${IMAGE_TAG}-dev \
+    sh -c "./node_modules/.bin/lint-staged"
+}
+
 prettify() {
   docker_check_image dev
 
@@ -216,6 +229,10 @@ case $1 in
     ;;
   "lint")
     lint
+    ;;
+
+  "lint-staged")
+    lint_staged
     ;;
   "prettify")
     prettify

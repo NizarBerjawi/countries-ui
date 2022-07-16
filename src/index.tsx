@@ -11,4 +11,6 @@ if (element) {
   root.render(<App />);
 }
 
-console.error('DOM element not found.');
+if (!element) {
+  console.error('DOM element not found.');
+}
