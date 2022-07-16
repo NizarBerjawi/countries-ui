@@ -12,7 +12,7 @@ export interface ITable<T> {
 }
 
 const Table = (props: ITable<Continent | Country>) => (
-  <table className='table is-fullwidth has-background-light'>
+  <table className='table is-striped is-fullwidth'>
     <thead>
       <tr>
         {props.headers.map(({ key, name }) => (
@@ -24,7 +24,7 @@ const Table = (props: ITable<Continent | Country>) => (
       {props.data.map((item, index) => (
         <tr key={index}>
           {props.headers.map(({ key }) => (
-            <td key={key}>{item[key]}</td>
+            <td key={`${key}-${index}`}>{item[key]}</td>
           ))}
         </tr>
       ))}

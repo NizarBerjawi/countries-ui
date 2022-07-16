@@ -12,11 +12,11 @@ export type LumenPaginationLinks = {
 };
 
 export type LumenMetaData = {
-  currentPage: number;
-  from: number;
+  currentPage?: number;
+  from?: number;
   path: string;
   perPage: number;
-  to: number;
+  to?: number;
 };
 
 export type LumenCollectionResponse<T> = {
@@ -36,7 +36,7 @@ export type LumenQuery = {
   };
   sort?: string[];
   page?: {
-    number: number;
+    cursor?: string;
     size?: number;
   };
 };
