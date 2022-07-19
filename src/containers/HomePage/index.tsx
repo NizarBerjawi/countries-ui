@@ -1,15 +1,27 @@
 import React, { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, UseQueryResult } from 'react-query';
 import { getPaginatedContinents } from '@api/continentApi';
 import { getPaginatedCountries } from '@api/countriesApi';
 import { Continent, Country } from 'src/types/app';
-import LoadMore from '@components/LoadMore';
 import ProgressBar from '@components/ProgressBar';
 import NavBar from '@components/NavBar';
 import { INavBarItem } from '@components/NavBarItem';
 import Table, { TableHeader } from '@components/Table';
+import Pagination from '@components/Pagination';
+import {
+  getPreviousCursor,
+  getNextCursor,
+  hasPrevious,
+  hasNext,
+} from '@utils/pagination';
+import { AxiosResponse } from 'axios';
+import { LumenCollectionResponse } from 'src/types/api';
+import { MapContainer, TileLayer } from 'react-leaflet';
+import { PathOptions } from 'leaflet';
+import LocationMarker from '@components/LocationMarker';
+import { getHomepageStatistics } from '@api/statisticsApi';
+import Number from '@components/Number';
 
-const FIRST_PAGE = 1;
 const LINKS: INavBarItem[] = [
   { path: '/', label: 'Home' },
   { path: '/continents', label: 'Continents' },
@@ -20,18 +32,22 @@ const LINKS: INavBarItem[] = [
   { path: '/statistics', label: 'Statistics' },
 ];
 
+const redOptions: PathOptions = { color: 'red' };
+
 const HomePage = () => {
-  const [pages, setPages] = useState<{ [key: string]: number }>({
-    continents: FIRST_PAGE,
-    countries: FIRST_PAGE,
-  });
+  const [cursors, setCursors] = useState<{ [key: string]: string | undefined }>(
+    {},
+  );
+
+  const statisticsQuery = useQuery(['statistics'], () =>
+    getHomepageStatistics(),
+  );
 
   const continentsQuery = useQuery(
-    ['continents', pages.continents],
+    ['continents', cursors.continents],
     () =>
       getPaginatedContinents({
-        page: { number: pages.continents },
-        include: 'countries',
+        page: { cursor: cursors.continents, size: 5 },
       }),
     {
       keepPreviousData: true,
@@ -39,146 +55,153 @@ const HomePage = () => {
   );
 
   const countriesQuery = useQuery(
-    ['countries', pages.countries],
+    ['countries', cursors.countries],
     () =>
       getPaginatedCountries({
-        page: { number: pages.countries },
+        page: { cursor: cursors.countries, size: 5 },
       }),
     {
       keepPreviousData: true,
     },
   );
 
-  const getQuery = (queryKey: string) => {
-    switch (queryKey) {
-      case 'continents':
-        return continentsQuery;
-      case 'countries':
-        return countriesQuery;
-      default:
-        throw new Error('Invalid query');
-    }
-  };
-
-  const hasMore = (queryKey: string) =>
-    !!getQuery(queryKey).data?.data.links.next;
-
-  const loadMore = (queryKey: string) => {
-    const query = getQuery(queryKey);
-
-    if (!query.isPreviousData && hasMore(queryKey)) {
-      setPages((prevPages) => ({
-        ...prevPages,
-        [`${queryKey}`]: prevPages[`${queryKey}`] + 1,
+  const loadNext = (
+    query: UseQueryResult<AxiosResponse<LumenCollectionResponse<any>>>,
+    key: string,
+  ) => {
+    if (!query.isPreviousData && hasNext(query)) {
+      setCursors((prevCursors) => ({
+        ...prevCursors,
+        [`${key}`]: getNextCursor(query),
       }));
     }
   };
 
-  if (continentsQuery.isLoading && countriesQuery.isLoading) {
-    return (
-      <ProgressBar size='small' color='primary' max='100' percentage='15%' />
-    );
-  }
+  const loadPrev = (
+    query: UseQueryResult<AxiosResponse<LumenCollectionResponse<any>>>,
+    key: string,
+  ) => {
+    if (!query.isPreviousData && hasPrevious(query)) {
+      setCursors((prevCursors) => ({
+        ...prevCursors,
+        [`${key}`]: getPreviousCursor(query),
+      }));
+    }
+  };
+
+  // if (continentsQuery.isLoading && countriesQuery.isLoading) {
+  //   return (
+  //     <ProgressBar size='small' color='primary' max='100' percentage='15%' />
+  //   );
+  // }
 
   const continents = continentsQuery?.data?.data.data || [];
   const countries = countriesQuery?.data?.data.data || [];
+  const statistics = statisticsQuery?.data?.data.data || [];
 
   return (
     <div className='container is-fluid'>
       <NavBar hasBrand links={LINKS} />
+      <span className='leaflet-default-icon-path' />
+
       <section className='section'>
-        <div className='tile is-ancestor'>
-          <div className='tile is-vertical is-8'>
-            <div className='tile is-parent'>
-              <article className='tile is-child notification'>
-                <p className='title'>Countries</p>
-                <Table
-                  headers={
-                    [
-                      { key: 'iso3166Alpha2', name: 'ISO 3166-2' },
-                      { key: 'name', name: 'Name' },
-                      { key: 'population', name: 'Population' },
-                      { key: 'area', name: 'Area' },
-                      { key: 'phoneCode', name: 'Phone Code' },
-                    ] as TableHeader<Continent | Country>[]
-                  }
-                  data={countries}
-                />
-
-                {hasMore('countries') && (
-                  <LoadMore
-                    label='Load More...'
-                    size='large'
-                    onClick={() => loadMore('countries')}
-                  />
-                )}
-              </article>
+        <div className='is-ancestor'>
+          <div className='tile is-parent is-12'>
+            <div className='tile box'>
+              {statistics.map((item) => (
+                <article key={item.key} className='tile is-child is-2'>
+                  <div className='level-item has-text-centered'>
+                    <div>
+                      <p className='heading'>{item.description}</p>
+                      <p className='title'>
+                        <Number>{item.value}</Number>
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              ))}
             </div>
+          </div>
+        </div>
 
-            <div className='tile is-parent'>
-              <article className='tile is-child notification'>
-                <p className='title'>Continents</p>
-                <table className='table is-fullwidth has-background-light'>
-                  <thead>
-                    <tr>
-                      <th>Code</th>
-                      <th>Name</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {continents.map((continent: Continent) => (
-                      <tr key={continent.code}>
-                        <td>{continent.code}</td>
-                        <td>{continent.name}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                {hasMore('continents') && (
-                  <LoadMore
-                    label='Load More...'
-                    size='large'
-                    onClick={() => loadMore('continents')}
+        <div className='is-ancestor'>
+          <div className='tile is-12'>
+            <div className='tile is-vertical is-4'>
+              <div className='tile is-parent'>
+                <article className='tile is-child box'>
+                  <p className='title'>Continents</p>
+                  <div className='table-container'>
+                    <Table
+                      headers={
+                        [
+                          { key: 'code', name: 'Code' },
+                          { key: 'name', name: 'Name' },
+                        ] as TableHeader<Continent | Country>[]
+                      }
+                      data={continents}
+                    />
+                  </div>
+                  <Pagination
+                    hasMore={hasNext(continentsQuery)}
+                    hasPrev={hasPrevious(continentsQuery)}
+                    onNext={() => loadNext(continentsQuery, 'continents')}
+                    onPrev={() => loadPrev(continentsQuery, 'continents')}
                   />
-                )}
-              </article>
-            </div>
-            <div className='tile'>
-              <div className='tile is-parent is-vertical'>
-                <article className='tile is-child notification is-warning'>
-                  <p className='title'>...tiles</p>
-                  <p className='subtitle'>Bottom tile</p>
                 </article>
               </div>
 
               <div className='tile is-parent'>
-                <article className='tile is-child notification is-info'>
-                  <p className='title'>Middle tile</p>
-                  <p className='subtitle'>With an image</p>
-                  <figure className='image is-4by3'>
-                    <img src='https://bulma.io/images/placeholders/640x480.png' />
-                  </figure>
+                <article className='tile is-child box'>
+                  <p className='title'>Countries</p>
+                  <div className='table-container'>
+                    <Table
+                      headers={
+                        [
+                          { key: 'iso3166Alpha2', name: 'ISO 3166-2' },
+                          { key: 'name', name: 'Name' },
+                          // { key: 'population', name: 'Population' },
+                          // { key: 'area', name: 'Area' },
+                          // { key: 'phoneCode', name: 'Phone Code' },
+                        ] as TableHeader<Continent | Country>[]
+                      }
+                      data={countries}
+                    />
+                  </div>
+
+                  <Pagination
+                    hasMore={hasNext(countriesQuery)}
+                    hasPrev={hasPrevious(countriesQuery)}
+                    onNext={() => loadNext(countriesQuery, 'countries')}
+                    onPrev={() => loadPrev(countriesQuery, 'countries')}
+                  />
                 </article>
               </div>
             </div>
-
             <div className='tile is-parent'>
-              <article className='tile is-child notification is-danger'>
-                <p className='title'>Wide tile</p>
-                <p className='subtitle'>Aligned with the right tile</p>
-                <div className='content'></div>
+              <article className='tile is-child box'>
+                <MapContainer
+                  center={[7.18805555556, 21.0936111111]}
+                  zoom={3}
+                  scrollWheelZoom={false}
+                  className='image is-4by3'
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                  />
+                  <LocationMarker />
+                  {/*
+                  <Marker icon={new Icon(options)} position={[51.505, -0.09]}>
+                    <Popup>
+                      A pretty CSS3 popup. <br /> Easily customizable.
+                    </Popup>
+                  </Marker> */}
+                  {/* <FeatureGroup pathOptions={redOptions}>
+                    <GeoJSON data={world110m} />
+                  </FeatureGroup> */}
+                </MapContainer>
               </article>
             </div>
-          </div>
-          <div className='tile is-parent'>
-            <article className='tile is-child notification is-success'>
-              <div className='content'>
-                <p className='title'>Tall tile</p>
-                <p className='subtitle'>With even more content</p>
-                <div className='content'></div>
-              </div>
-            </article>
           </div>
         </div>
       </section>
