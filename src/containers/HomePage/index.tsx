@@ -14,12 +14,6 @@ import Number from '@components/Number';
 import Page from '@components/Page';
 import { getCountries } from '@api/countriesApi';
 import Modal from '@components/Modal';
-import {
-  hasNext,
-  getNextCursor,
-  hasPrevious,
-  getPreviousCursor,
-} from '@utils/pagination';
 import { LumenCollectionResponse } from 'src/types/api';
 import { Country } from 'src/types/app';
 import usePagination from '../../hooks/usePagination';
@@ -42,11 +36,27 @@ const HomePage = () => {
     getHomepageStatistics(),
   );
 
-  const countriesQuery = useQuery(
-    ['countries', countryName, cursors.countries],
-    () =>
+  // const countriesQuery = useQuery(
+  //   ['countries', countryName, cursors.countries],
+  //   () =>
+  //     getCountries({
+  //       page: { cursor: cursors.countries, size: 5 },
+  //       filter: {
+  //         name: countryName,
+  //       },
+  //       include: 'location',
+  //     }),
+  //   {
+  //     enabled: !!cursors.countries || false,
+  //     keepPreviousData: true,
+  //   },
+  // );
+
+  const { query, next, prev, hasMore, hasPrev } = usePagination(
+    (cursor) => ['countries', countryName, cursor],
+    (cursor) =>
       getCountries({
-        page: { cursor: cursors.countries, size: 5 },
+        page: { cursor, size: 5 },
         filter: {
           name: countryName,
         },
@@ -58,35 +68,6 @@ const HomePage = () => {
     },
   );
 
-  const { query, next, prev, hasMore, hasPrev } = usePagination(
-    getCountries,
-    'countries',
-  );
-
-  const loadNext = (
-    query: UseQueryResult<LumenCollectionResponse<Country>>,
-    key: string,
-  ) => {
-    if (!query.isPreviousData && hasNext(query)) {
-      setCursors((prevCursors) => ({
-        ...prevCursors,
-        [`${key}`]: getNextCursor(query),
-      }));
-    }
-  };
-
-  const loadPrev = (
-    query: UseQueryResult<LumenCollectionResponse<Country>>,
-    key: string,
-  ) => {
-    if (!query.isPreviousData && hasPrevious(query)) {
-      setCursors((prevCursors) => ({
-        ...prevCursors,
-        [`${key}`]: getPreviousCursor(query),
-      }));
-    }
-  };
-
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCountryName(e.target.value);
   };
@@ -94,7 +75,7 @@ const HomePage = () => {
   const handleSearchClick = (e: MouseEvent) => {
     e.preventDefault();
 
-    countriesQuery.refetch();
+    query.refetch();
 
     setShowResults(true);
   };
@@ -118,7 +99,7 @@ const HomePage = () => {
   };
 
   const statistics = statisticsQuery?.data?.data || [];
-  const countries = countriesQuery?.data?.data || [];
+  const countries = query?.data?.data || [];
 
   return (
     <Page>
@@ -189,10 +170,10 @@ const HomePage = () => {
       </section>
 
       <Modal active={showResults} onClose={handleSearchClose}>
-        {countriesQuery.isLoading && <>Loading...</>}
+        {query.isLoading && <>Loading...</>}
 
-        {countriesQuery.isSuccess &&
-          countries.map((country) => (
+        {query.isSuccess &&
+          countries.map((country: Country) => (
             <div
               key={country.iso3166Alpha2}
               className='box is-clickable'
@@ -203,10 +184,10 @@ const HomePage = () => {
           ))}
 
         <Pagination
-          hasMore={hasNext(countriesQuery)}
-          hasPrev={hasPrevious(countriesQuery)}
-          onNext={() => loadNext(countriesQuery, 'countries')}
-          onPrev={() => loadPrev(countriesQuery, 'countries')}
+          hasMore={hasMore()}
+          hasPrev={hasPrev()}
+          onNext={next}
+          onPrev={prev}
         />
       </Modal>
     </Page>
