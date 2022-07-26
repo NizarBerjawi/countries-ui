@@ -1,14 +1,27 @@
 import http from '@utils/http';
-import { AxiosResponse } from 'axios';
 import { stringify } from 'qs';
 import { LumenQuery, LumenCollectionResponse } from 'src/types/api';
 import { Country } from 'src/types/app';
 
-const getPaginatedCountries = async (
+const getCountries = async (
   params?: LumenQuery,
-): Promise<AxiosResponse<LumenCollectionResponse<Country>>> => {
+): Promise<LumenCollectionResponse<Country>> => {
   const query = stringify(params, { addQueryPrefix: true });
-  return http.get(`/countries${query}`);
+
+  const { data } = await http.get(`/countries${query}`);
+
+  return data;
 };
 
-export { getPaginatedCountries };
+const getCountry = async (
+  countryCode: Country['iso3166Alpha2'],
+  params?: LumenQuery,
+): Promise<LumenCollectionResponse<Country>> => {
+  const query = stringify(params, { addQueryPrefix: true });
+
+  const { data } = await http.get(`/countries/${countryCode}${query}`);
+
+  return data;
+};
+
+export { getCountry, getCountries };

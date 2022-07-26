@@ -1,14 +1,16 @@
 import http from '@utils/http';
-import { AxiosResponse } from 'axios';
 import { stringify } from 'qs';
 import { LumenQuery, LumenCollectionResponse } from 'src/types/api';
 import { Continent } from 'src/types/app';
 
 const getPaginatedContinents = async (
   params?: LumenQuery,
-): Promise<AxiosResponse<LumenCollectionResponse<Continent>>> => {
+): Promise<LumenCollectionResponse<Continent>> => {
   const query = stringify(params, { addQueryPrefix: true });
-  return http.get(`/continents${query}`);
+
+  const { data } = await http.get(`/continents${query}`);
+
+  return data;
 };
 
 export { getPaginatedContinents };

@@ -1,6 +1,10 @@
-import { Icon, IconOptions, LatLng, LeafletMouseEvent } from 'leaflet';
+import { Icon, IconOptions, LatLngLiteral } from 'leaflet';
 import React, { useState } from 'react';
-import { Marker, Popup, useMapEvents } from 'react-leaflet';
+import { Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+
+export interface ILocationMarker {
+  position: LatLngLiteral;
+}
 
 const options: IconOptions = {
   iconUrl: 'https://unpkg.com/leaflet@1.8.0/dist/images/marker-icon.png',
@@ -14,15 +18,10 @@ const options: IconOptions = {
   shadowSize: [41, 41],
 };
 
-const LocationMarker = () => {
-  const [position, setPosition] = useState<LatLng>();
-  const map = useMapEvents({
-    click(e: LeafletMouseEvent) {
-      console.log(e);
-      setPosition(e.latlng);
-      map.flyTo(e.latlng, map.getZoom());
-    },
-  });
+const LocationMarker = ({ position }: ILocationMarker) => {
+  const map = useMap();
+
+  map.flyTo(position);
 
   if (!position) {
     return <></>;

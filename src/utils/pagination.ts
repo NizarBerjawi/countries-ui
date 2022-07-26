@@ -1,45 +1,45 @@
 import { AxiosResponse } from 'axios';
-import { UseQueryResult } from 'react-query';
+import { UseQueryResult } from '@tanstack/react-query';
 import { LumenCollectionResponse, LumenQuery } from 'src/types/api';
-import qs from 'qs';
+import { parse } from 'qs';
 
 const hasPrevious = (
-  query: UseQueryResult<AxiosResponse<LumenCollectionResponse<any>>>,
+  query: UseQueryResult<LumenCollectionResponse<unknown>>,
 ): boolean => {
-  return !!query.data?.data.links.prev;
+  return !!query.data?.links.prev;
 };
 
 const hasNext = (
-  query: UseQueryResult<AxiosResponse<LumenCollectionResponse<any>>>,
+  query: UseQueryResult<LumenCollectionResponse<unknown>>,
 ): boolean => {
-  return !!query.data?.data.links.next;
+  return !!query.data?.links.next;
 };
 
 const getNextCursor = (
-  query: UseQueryResult<AxiosResponse<LumenCollectionResponse<any>>>,
+  query: UseQueryResult<LumenCollectionResponse<unknown>>,
 ): string | undefined => {
   if (!query.data) {
     return;
   }
 
-  return cursor(query.data.data.links.next);
+  return cursor(query.data.links.next);
 };
 
 const getPreviousCursor = (
-  query: UseQueryResult<AxiosResponse<LumenCollectionResponse<any>>>,
+  query: UseQueryResult<LumenCollectionResponse<unknown>>,
 ): string | undefined => {
   if (!query.data) {
     return;
   }
 
-  return cursor(query.data.data.links.prev);
+  return cursor(query.data.links.prev);
 };
 
 const cursor = (link: string): string | undefined => {
   if (!link) {
     return;
   }
-  const search: LumenQuery = qs.parse(new URL(link).search, {
+  const search: LumenQuery = parse(new URL(link).search, {
     ignoreQueryPrefix: true,
   });
 

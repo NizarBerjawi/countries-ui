@@ -1,40 +1,39 @@
-import React, { useState } from 'react';
-import { useQuery, UseQueryResult } from 'react-query';
-import { getPaginatedContinents } from '@api/continentApi';
-import { getPaginatedCountries } from '@api/countriesApi';
-import { Continent, Country } from 'src/types/app';
-import ProgressBar from '@components/ProgressBar';
-import NavBar from '@components/NavBar';
-import { INavBarItem } from '@components/NavBarItem';
-import Table, { TableHeader } from '@components/Table';
-import Pagination from '@components/Pagination';
-import {
-  getPreviousCursor,
-  getNextCursor,
-  hasPrevious,
-  hasNext,
-} from '@utils/pagination';
-import { AxiosResponse } from 'axios';
-import { LumenCollectionResponse } from 'src/types/api';
+import React, {
+  ChangeEvent,
+  MouseEvent,
+  MouseEventHandler,
+  useState,
+} from 'react';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { LatLng, LatLngLiteral } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { PathOptions } from 'leaflet';
 import LocationMarker from '@components/LocationMarker';
+import Pagination from '@components/Pagination';
 import { getHomepageStatistics } from '@api/statisticsApi';
 import Number from '@components/Number';
+import Page from '@components/Page';
+import { getCountries } from '@api/countriesApi';
+import Modal from '@components/Modal';
+import {
+  hasNext,
+  getNextCursor,
+  hasPrevious,
+  getPreviousCursor,
+} from '@utils/pagination';
+import { LumenCollectionResponse } from 'src/types/api';
+import { Country } from 'src/types/app';
+import usePagination from '../../hooks/usePagination';
 
-const LINKS: INavBarItem[] = [
-  { path: '/', label: 'Home' },
-  { path: '/continents', label: 'Continents' },
-  { path: '/countries', label: 'Countries' },
-  { path: '/languages', label: 'Languages' },
-  { path: '/currencies', label: 'Currencies' },
-  { path: '/timeZones', label: 'Time Zones' },
-  { path: '/statistics', label: 'Statistics' },
-];
-
-const redOptions: PathOptions = { color: 'red' };
+// const redOptions: PathOptions = { color: 'red' };
 
 const HomePage = () => {
+  const [mapCenter, setMapCenter] = useState<LatLngLiteral>({
+    lat: 7.18805555556,
+    lng: 21.0936111111,
+  });
+  const [countryName, setCountryName] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState<Country>();
+  const [showResults, setShowResults] = useState(false);
   const [cursors, setCursors] = useState<{ [key: string]: string | undefined }>(
     {},
   );
@@ -43,30 +42,29 @@ const HomePage = () => {
     getHomepageStatistics(),
   );
 
-  const continentsQuery = useQuery(
-    ['continents', cursors.continents],
+  const countriesQuery = useQuery(
+    ['countries', countryName, cursors.countries],
     () =>
-      getPaginatedContinents({
-        page: { cursor: cursors.continents, size: 5 },
+      getCountries({
+        page: { cursor: cursors.countries, size: 5 },
+        filter: {
+          name: countryName,
+        },
+        include: 'location',
       }),
     {
+      enabled: !!cursors.countries || false,
       keepPreviousData: true,
     },
   );
 
-  const countriesQuery = useQuery(
-    ['countries', cursors.countries],
-    () =>
-      getPaginatedCountries({
-        page: { cursor: cursors.countries, size: 5 },
-      }),
-    {
-      keepPreviousData: true,
-    },
+  const { query, next, prev, hasMore, hasPrev } = usePagination(
+    getCountries,
+    'countries',
   );
 
   const loadNext = (
-    query: UseQueryResult<AxiosResponse<LumenCollectionResponse<any>>>,
+    query: UseQueryResult<LumenCollectionResponse<Country>>,
     key: string,
   ) => {
     if (!query.isPreviousData && hasNext(query)) {
@@ -78,7 +76,7 @@ const HomePage = () => {
   };
 
   const loadPrev = (
-    query: UseQueryResult<AxiosResponse<LumenCollectionResponse<any>>>,
+    query: UseQueryResult<LumenCollectionResponse<Country>>,
     key: string,
   ) => {
     if (!query.isPreviousData && hasPrevious(query)) {
@@ -89,21 +87,41 @@ const HomePage = () => {
     }
   };
 
-  // if (continentsQuery.isLoading && countriesQuery.isLoading) {
-  //   return (
-  //     <ProgressBar size='small' color='primary' max='100' percentage='15%' />
-  //   );
-  // }
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setCountryName(e.target.value);
+  };
 
-  const continents = continentsQuery?.data?.data.data || [];
-  const countries = countriesQuery?.data?.data.data || [];
-  const statistics = statisticsQuery?.data?.data.data || [];
+  const handleSearchClick = (e: MouseEvent) => {
+    e.preventDefault();
+
+    countriesQuery.refetch();
+
+    setShowResults(true);
+  };
+
+  const handleSearchClose = (e: MouseEvent) => {
+    setShowResults(false);
+  };
+
+  const handleCountrySelect = (e: MouseEvent, country: Country) => {
+    e.preventDefault();
+
+    setSelectedCountry(country);
+
+    if (country.location) {
+      setMapCenter({
+        lat: country.location.latitude,
+        lng: country.location.longitude,
+      });
+    }
+    setShowResults(false);
+  };
+
+  const statistics = statisticsQuery?.data?.data || [];
+  const countries = countriesQuery?.data?.data || [];
 
   return (
-    <div className='container is-fluid'>
-      <NavBar hasBrand links={LINKS} />
-      <span className='leaflet-default-icon-path' />
-
+    <Page>
       <section className='section'>
         <div className='is-ancestor'>
           <div className='tile is-parent is-12'>
@@ -125,87 +143,73 @@ const HomePage = () => {
         </div>
 
         <div className='is-ancestor'>
-          <div className='tile is-12'>
-            <div className='tile is-vertical is-4'>
-              <div className='tile is-parent'>
-                <article className='tile is-child box'>
-                  <p className='title'>Continents</p>
-                  <div className='table-container'>
-                    <Table
-                      headers={
-                        [
-                          { key: 'code', name: 'Code' },
-                          { key: 'name', name: 'Name' },
-                        ] as TableHeader<Continent | Country>[]
-                      }
-                      data={continents}
-                    />
+          <div className='tile'>
+            <div className='tile is-parent is-justify-content-center	'>
+              <div className='tile is-vertical'>
+                <article className='tile is-child'>
+                  <div className='field has-addons'>
+                    <div className='control is-expanded'>
+                      <input
+                        className='input is-fullwidth is-large'
+                        type='text'
+                        placeholder='e.g. Australia'
+                        onChange={handleSearchChange}
+                      />
+                    </div>
+                    <div className='control'>
+                      <a
+                        className='button is-primary is-large'
+                        onClick={handleSearchClick}
+                      >
+                        Search
+                      </a>
+                    </div>
                   </div>
-                  <Pagination
-                    hasMore={hasNext(continentsQuery)}
-                    hasPrev={hasPrevious(continentsQuery)}
-                    onNext={() => loadNext(continentsQuery, 'continents')}
-                    onPrev={() => loadPrev(continentsQuery, 'continents')}
-                  />
                 </article>
-              </div>
 
-              <div className='tile is-parent'>
-                <article className='tile is-child box'>
-                  <p className='title'>Countries</p>
-                  <div className='table-container'>
-                    <Table
-                      headers={
-                        [
-                          { key: 'iso3166Alpha2', name: 'ISO 3166-2' },
-                          { key: 'name', name: 'Name' },
-                          // { key: 'population', name: 'Population' },
-                          // { key: 'area', name: 'Area' },
-                          // { key: 'phoneCode', name: 'Phone Code' },
-                        ] as TableHeader<Continent | Country>[]
-                      }
-                      data={countries}
+                <div className='tile is-child'>
+                  <MapContainer
+                    center={mapCenter}
+                    zoom={3}
+                    scrollWheelZoom={false}
+                    className='image is-4by3'
+                    style={{ zIndex: -1 }}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
                     />
-                  </div>
-
-                  <Pagination
-                    hasMore={hasNext(countriesQuery)}
-                    hasPrev={hasPrevious(countriesQuery)}
-                    onNext={() => loadNext(countriesQuery, 'countries')}
-                    onPrev={() => loadPrev(countriesQuery, 'countries')}
-                  />
-                </article>
+                    <LocationMarker position={mapCenter} />
+                  </MapContainer>
+                </div>
               </div>
-            </div>
-            <div className='tile is-parent'>
-              <article className='tile is-child box'>
-                <MapContainer
-                  center={[7.18805555556, 21.0936111111]}
-                  zoom={3}
-                  scrollWheelZoom={false}
-                  className='image is-4by3'
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                  />
-                  <LocationMarker />
-                  {/*
-                  <Marker icon={new Icon(options)} position={[51.505, -0.09]}>
-                    <Popup>
-                      A pretty CSS3 popup. <br /> Easily customizable.
-                    </Popup>
-                  </Marker> */}
-                  {/* <FeatureGroup pathOptions={redOptions}>
-                    <GeoJSON data={world110m} />
-                  </FeatureGroup> */}
-                </MapContainer>
-              </article>
             </div>
           </div>
         </div>
       </section>
-    </div>
+
+      <Modal active={showResults} onClose={handleSearchClose}>
+        {countriesQuery.isLoading && <>Loading...</>}
+
+        {countriesQuery.isSuccess &&
+          countries.map((country) => (
+            <div
+              key={country.iso3166Alpha2}
+              className='box is-clickable'
+              onClick={(e) => handleCountrySelect(e, country)}
+            >
+              {country.name}
+            </div>
+          ))}
+
+        <Pagination
+          hasMore={hasNext(countriesQuery)}
+          hasPrev={hasPrevious(countriesQuery)}
+          onNext={() => loadNext(countriesQuery, 'countries')}
+          onPrev={() => loadPrev(countriesQuery, 'countries')}
+        />
+      </Modal>
+    </Page>
   );
 };
 
