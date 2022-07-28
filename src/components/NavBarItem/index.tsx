@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import React, { PropsWithChildren } from 'react';
+import { Link, LinkProps } from 'react-router-dom';
 
-export interface INavBarItem {
-  path?: HTMLAnchorElement['href'];
+export interface INavBarItem extends LinkProps {
   label?: HTMLAnchorElement['text'];
   hasDropdown?: boolean;
   isBrand?: boolean;
@@ -10,7 +10,8 @@ export interface INavBarItem {
 }
 
 const NavBarItem = (props: PropsWithChildren<INavBarItem>) => {
-  const { path, label, hasDropdown, isBrand, isActive, children } = props;
+  const { to, label, hasDropdown, isBrand, isActive, children, ...other } =
+    props;
 
   if (hasDropdown) {
     return (
@@ -28,9 +29,9 @@ const NavBarItem = (props: PropsWithChildren<INavBarItem>) => {
   }
 
   return (
-    <a href={path} className='navbar-item'>
+    <Link to={to} className='navbar-item' {...other}>
       {isBrand ? children : label}
-    </a>
+    </Link>
   );
 };
 

@@ -7,15 +7,12 @@ import Page from '@components/Page';
 import usePagination from '../../hooks/usePagination';
 
 const CountriesPage = () => {
-  const { query, next, prev, hasMore, hasPrev } = usePagination(
-    ['countries'],
-    (cursors: any) =>
+  const { data, isLoading, next, prev, hasMore, hasPrev } =
+    usePagination<Country>(['countries'], (cursor) =>
       getCountries({
-        page: { cursor: cursors['countries'], size: 5 },
+        page: { cursor, size: 5 },
       }),
-  );
-
-  const countries = query?.data?.data || [];
+    );
 
   return (
     <Page>
@@ -29,7 +26,7 @@ const CountriesPage = () => {
                 <article className='tile is-child box'>
                   <p className='title'>Countries</p>
                   <div className='table-container'>
-                    {!query.isLoading && (
+                    {!isLoading && data?.length && (
                       <Table
                         headers={
                           [
@@ -40,14 +37,14 @@ const CountriesPage = () => {
                             { key: 'phoneCode', name: 'Phone Code' },
                           ] as TableHeader<Continent | Country>[]
                         }
-                        data={countries}
+                        data={data}
                       />
                     )}
                   </div>
 
                   <Pagination
-                    hasMore={hasMore()}
-                    hasPrev={hasPrev()}
+                    hasMore={hasMore}
+                    hasPrev={hasPrev}
                     onNext={() => next()}
                     onPrev={() => prev()}
                   />

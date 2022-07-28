@@ -23,7 +23,7 @@ const NavBar = (props: PropsWithChildren<INavBar>) => {
     <nav className='navbar' role='navigation' aria-label='main navigation'>
       {hasBrand && (
         <div className='navbar-brand'>
-          <NavBarItem path='/' isBrand>
+          <NavBarItem to='/' isBrand>
             <img
               src='https://bulma.io/images/bulma-logo.png'
               width='112'
@@ -42,7 +42,7 @@ const NavBar = (props: PropsWithChildren<INavBar>) => {
       >
         <div className='navbar-start'>
           {links.map((item: INavBarItem, index) => (
-            <NavBarItem key={index} path={item.path} label={item.label} />
+            <NavBarItem key={index} to={item.to} label={item.label} />
           ))}
         </div>
       </div>

@@ -1,46 +1,37 @@
-import { useEffect, useState } from 'react';
-import {
-  useQuery,
-  QueryKey,
-  UseQueryOptions,
-  hashQueryKey,
-} from '@tanstack/react-query';
+import { useState } from 'react';
+import { useQuery, QueryKey, UseQueryOptions } from '@tanstack/react-query';
 import { LumenCollectionResponse, LumenQuery } from 'src/types/api';
 import { parse } from 'qs';
 
-const usePagination = (
-  queryKey: (cursor?: string) => QueryKey,
-  queryFn: (cursor?: string) => Promise<LumenCollectionResponse<unknown>>,
-  options?: Omit<UseQueryOptions, 'queryKey' | 'queryFn' | 'initialData'> & {
-    initialData?: () => undefined;
-  },
+const usePagination = <T = unknown>(
+  queryKey: QueryKey,
+  queryFn: (cursor?: string) => Promise<LumenCollectionResponse<T>>,
+  options: UseQueryOptions<LumenCollectionResponse<T>> = {},
 ) => {
   const [cursor, setCursor] = useState<string | undefined>();
 
-  const query = useQuery(
-    queryKey(cursor),
-    (): Promise<LumenCollectionResponse<unknown>> => queryFn(cursor),
-    options,
-  );
+  const key: QueryKey = [...queryKey, cursor];
+
+  const query = useQuery(key, () => queryFn(cursor), {
+    ...options,
+    enabled: !!cursor || options.enabled === undefined || options.enabled,
+    keepPreviousData: true,
+  });
+
+  const hasMore = !!query.data?.links.next;
+
+  const hasPrev = !!query.data?.links.prev;
 
   const next = () => {
-    if (!query.isPreviousData && hasMore()) {
+    if (!query.isPreviousData && hasMore) {
       setCursor(nextCursor());
     }
   };
 
   const prev = () => {
-    if (!query.isPreviousData && hasPrev()) {
+    if (!query.isPreviousData && hasPrev) {
       setCursor(prevCursor());
     }
-  };
-
-  const hasMore = (): boolean => {
-    return !!query.data?.links.next;
-  };
-
-  const hasPrev = (): boolean => {
-    return !!query.data?.links.prev;
   };
 
   const nextCursor = (): string | undefined => {
@@ -76,14 +67,15 @@ const usePagination = (
   };
 
   return {
-    query,
-    cursor,
+    ...query,
+    data: query?.data?.data,
     next,
     prev,
     hasMore,
     hasPrev,
     nextCursor,
     prevCursor,
+    cursor,
   };
 };
 

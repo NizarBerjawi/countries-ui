@@ -1,11 +1,6 @@
-import React, {
-  ChangeEvent,
-  MouseEvent,
-  MouseEventHandler,
-  useState,
-} from 'react';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { LatLng, LatLngLiteral } from 'leaflet';
+import React, { ChangeEvent, MouseEvent, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { LatLngLiteral } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import LocationMarker from '@components/LocationMarker';
 import Pagination from '@components/Pagination';
@@ -14,7 +9,6 @@ import Number from '@components/Number';
 import Page from '@components/Page';
 import { getCountries } from '@api/countriesApi';
 import Modal from '@components/Modal';
-import { LumenCollectionResponse } from 'src/types/api';
 import { Country } from 'src/types/app';
 import usePagination from '../../hooks/usePagination';
 
@@ -28,32 +22,13 @@ const HomePage = () => {
   const [countryName, setCountryName] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<Country>();
   const [showResults, setShowResults] = useState(false);
-  const [cursors, setCursors] = useState<{ [key: string]: string | undefined }>(
-    {},
-  );
 
   const statisticsQuery = useQuery(['statistics'], () =>
     getHomepageStatistics(),
   );
 
-  // const countriesQuery = useQuery(
-  //   ['countries', countryName, cursors.countries],
-  //   () =>
-  //     getCountries({
-  //       page: { cursor: cursors.countries, size: 5 },
-  //       filter: {
-  //         name: countryName,
-  //       },
-  //       include: 'location',
-  //     }),
-  //   {
-  //     enabled: !!cursors.countries || false,
-  //     keepPreviousData: true,
-  //   },
-  // );
-
-  const { query, next, prev, hasMore, hasPrev } = usePagination(
-    (cursor) => ['countries', countryName, cursor],
+  const paginatedCountries = usePagination<Country>(
+    ['countries', countryName],
     (cursor) =>
       getCountries({
         page: { cursor, size: 5 },
@@ -63,8 +38,7 @@ const HomePage = () => {
         include: 'location',
       }),
     {
-      enabled: !!cursors.countries || false,
-      keepPreviousData: true,
+      enabled: false,
     },
   );
 
@@ -75,17 +49,21 @@ const HomePage = () => {
   const handleSearchClick = (e: MouseEvent) => {
     e.preventDefault();
 
-    query.refetch();
+    paginatedCountries.refetch();
 
     setShowResults(true);
   };
 
   const handleSearchClose = (e: MouseEvent) => {
     setShowResults(false);
+
+    paginatedCountries.remove();
   };
 
   const handleCountrySelect = (e: MouseEvent, country: Country) => {
     e.preventDefault();
+
+    setShowResults(false);
 
     setSelectedCountry(country);
 
@@ -95,11 +73,11 @@ const HomePage = () => {
         lng: country.location.longitude,
       });
     }
-    setShowResults(false);
+
+    paginatedCountries.remove();
   };
 
   const statistics = statisticsQuery?.data?.data || [];
-  const countries = query?.data?.data || [];
 
   return (
     <Page>
@@ -170,10 +148,10 @@ const HomePage = () => {
       </section>
 
       <Modal active={showResults} onClose={handleSearchClose}>
-        {query.isLoading && <>Loading...</>}
+        {paginatedCountries.isLoading && <>Loading...</>}
 
-        {query.isSuccess &&
-          countries.map((country: Country) => (
+        {paginatedCountries.isSuccess &&
+          paginatedCountries.data?.map((country: Country) => (
             <div
               key={country.iso3166Alpha2}
               className='box is-clickable'
@@ -184,10 +162,10 @@ const HomePage = () => {
           ))}
 
         <Pagination
-          hasMore={hasMore()}
-          hasPrev={hasPrev()}
-          onNext={next}
-          onPrev={prev}
+          hasMore={paginatedCountries.hasMore}
+          hasPrev={paginatedCountries.hasPrev}
+          onNext={() => paginatedCountries.next()}
+          onPrev={() => paginatedCountries.prev()}
         />
       </Modal>
     </Page>

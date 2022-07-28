@@ -4,6 +4,7 @@ import { Continent, Country } from 'src/types/app';
 export type TableHeader<T> = {
   key: keyof T;
   name: string;
+  type: boolean | number | string;
 };
 
 export interface ITable<T> {
