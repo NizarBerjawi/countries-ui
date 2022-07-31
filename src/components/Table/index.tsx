@@ -1,3 +1,4 @@
+import TableRow from '@components/TableRow';
 import React from 'react';
 import { Continent, Country } from 'src/types/app';
 
@@ -23,11 +24,11 @@ const Table = (props: ITable<Continent | Country>) => (
     </thead>
     <tbody>
       {props.data.map((item, index) => (
-        <tr key={index}>
+        <TableRow key={index}>
           {props.headers.map(({ key }) => (
             <td key={`${key}-${index}`}>{item[key]}</td>
           ))}
-        </tr>
+        </TableRow>
       ))}
     </tbody>
   </table>

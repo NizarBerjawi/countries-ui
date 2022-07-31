@@ -55,6 +55,7 @@ const HomePage = () => {
   };
 
   const handleSearchClose = (e: MouseEvent) => {
+    e.preventDefault();
     setShowResults(false);
 
     paginatedCountries.remove();

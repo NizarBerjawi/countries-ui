@@ -7,7 +7,7 @@ export type LumenValue =
   | LumenCollection;
 
 export type LumenResource = {
-  [key: string]: any;
+  [key: string]: LumenValue;
 };
 
 export type LumenCollection = LumenResource[];
