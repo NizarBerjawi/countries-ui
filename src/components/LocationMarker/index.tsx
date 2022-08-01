@@ -1,6 +1,6 @@
 import { Icon, IconOptions, LatLngLiteral } from 'leaflet';
-import React, { useState } from 'react';
-import { Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import React from 'react';
+import { Marker, Popup, useMap } from 'react-leaflet';
 
 export interface ILocationMarker {
   position: LatLngLiteral;

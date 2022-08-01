@@ -1,5 +1,6 @@
+import TableData from '@components/TableData';
 import TableRow from '@components/TableRow';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Continent, Country } from 'src/types/app';
 
 export type TableHeader<T> = {
@@ -13,7 +14,7 @@ export interface ITable<T> {
   data: T[];
 }
 
-const Table = (props: ITable<Continent | Country>) => (
+const Table = (props: PropsWithChildren<ITable<Continent | Country>>) => (
   <table className='table is-striped is-fullwidth'>
     <thead>
       <tr>
@@ -23,13 +24,14 @@ const Table = (props: ITable<Continent | Country>) => (
       </tr>
     </thead>
     <tbody>
-      {props.data.map((item, index) => (
-        <TableRow key={index}>
-          {props.headers.map(({ key }) => (
-            <td key={`${key}-${index}`}>{item[key]}</td>
-          ))}
-        </TableRow>
-      ))}
+      {props.data &&
+        props.data.map((item, index) => (
+          <TableRow key={index}>
+            {props.headers.map(({ key }) => (
+              <TableData key={`${key}-${index}`}>{item[key]}</TableData>
+            ))}
+          </TableRow>
+        ))}
     </tbody>
   </table>
 );
