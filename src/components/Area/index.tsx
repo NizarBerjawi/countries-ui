@@ -14,7 +14,7 @@ const Area = ({ children }: PropsWithChildren<IArea>) => {
     <>
       <Number>{children}</Number>
       <span>
-        km<span className='sup'>2</span>
+        km<sup>2</sup>
       </span>
     </>
   );

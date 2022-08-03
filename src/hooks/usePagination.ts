@@ -14,7 +14,6 @@ const usePagination = <T = unknown>(
 
   const query = useQuery(key, () => queryFn(cursor), {
     ...options,
-    enabled: !!cursor || options.enabled === undefined || options.enabled,
     keepPreviousData: true,
   });
 

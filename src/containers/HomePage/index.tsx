@@ -11,7 +11,6 @@ import { getCountries } from '@api/countriesApi';
 import Modal from '@components/Modal';
 import { Country } from 'src/types/app';
 import usePagination from '../../hooks/usePagination';
-import Area from '@components/Area';
 
 // const redOptions: PathOptions = { color: 'red' };
 
@@ -23,7 +22,6 @@ const HomePage = () => {
   const [countryName, setCountryName] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<Country>();
   const [showResults, setShowResults] = useState(false);
-  console.log(selectedCountry);
   const statisticsQuery = useQuery(['statistics'], () =>
     getHomepageStatistics(),
   );
@@ -39,7 +37,7 @@ const HomePage = () => {
         include: 'location',
       }),
     {
-      enabled: false,
+      enabled: showResults,
     },
   );
 
@@ -93,7 +91,7 @@ const HomePage = () => {
                     <div>
                       <p className='heading'>{item.description}</p>
                       <p className='title'>
-                        <Area>{item.value}</Area>
+                        <Number>{item.value}</Number>
                       </p>
                     </div>
                   </div>
