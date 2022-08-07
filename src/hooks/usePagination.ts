@@ -14,7 +14,6 @@ const usePagination = <T = unknown>(
 
   const query = useQuery(key, () => queryFn(cursor), {
     ...options,
-    enabled: !!cursor || options.enabled === undefined || options.enabled,
     keepPreviousData: true,
   });
 
@@ -66,16 +65,22 @@ const usePagination = <T = unknown>(
     return search.page?.cursor;
   };
 
+  const remove = () => {
+    setCursor(undefined);
+    query.remove();
+  };
+
   return {
     ...query,
-    data: query?.data?.data,
+    data: query.data?.data,
+    remove,
     next,
     prev,
     hasMore,
     hasPrev,
+    cursor,
     nextCursor,
     prevCursor,
-    cursor,
   };
 };
 

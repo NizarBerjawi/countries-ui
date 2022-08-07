@@ -10,7 +10,7 @@ const CountriesPage = () => {
   const { data, isLoading, next, prev, hasMore, hasPrev } =
     usePagination<Country>(['countries'], (cursor) =>
       getCountries({
-        page: { cursor, size: 5 },
+        page: { cursor, size: 7 },
       }),
     );
 
@@ -35,7 +35,7 @@ const CountriesPage = () => {
                             { key: 'population', name: 'Population' },
                             { key: 'area', name: 'Area' },
                             { key: 'phoneCode', name: 'Phone Code' },
-                          ] as TableHeader<Continent | Country>[]
+                          ] as TableHeader<Country>[]
                         }
                         data={data}
                       />

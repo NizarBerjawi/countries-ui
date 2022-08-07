@@ -1,8 +1,15 @@
-import React, { ChangeEvent, MouseEvent, useState } from 'react';
+import React, {
+  ChangeEvent,
+  MouseEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { LatLngLiteral } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import LocationMarker from '@components/LocationMarker';
+import Icon from '@components/Icon';
 import Pagination from '@components/Pagination';
 import { getHomepageStatistics } from '@api/statisticsApi';
 import Number from '@components/Number';
@@ -11,63 +18,71 @@ import { getCountries } from '@api/countriesApi';
 import Modal from '@components/Modal';
 import { Country } from 'src/types/app';
 import usePagination from '../../hooks/usePagination';
-import Area from '@components/Area';
+import { useDebounce } from 'use-debounce';
 
-// const redOptions: PathOptions = { color: 'red' };
+const CENTER = {
+  lat: 7.18805555556,
+  lng: 21.0936111111,
+};
 
 const HomePage = () => {
-  const [mapCenter, setMapCenter] = useState<LatLngLiteral>({
-    lat: 7.18805555556,
-    lng: 21.0936111111,
-  });
-  const [countryName, setCountryName] = useState('');
+  const [mapCenter, setMapCenter] = useState<LatLngLiteral>(CENTER);
+  const inputElement = useRef<HTMLInputElement>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery] = useDebounce(searchQuery, 500);
   const [selectedCountry, setSelectedCountry] = useState<Country>();
-  const [showResults, setShowResults] = useState(false);
-  console.log(selectedCountry);
+  const [showSearchModal, setShowSearchModal] = useState(false);
+
+  useEffect(() => {
+    if (inputElement.current) {
+      inputElement.current.focus();
+    }
+  }, [showSearchModal]);
+
   const statisticsQuery = useQuery(['statistics'], () =>
     getHomepageStatistics(),
   );
 
   const paginatedCountries = usePagination<Country>(
-    ['countries', countryName],
+    ['countries', debouncedQuery],
     (cursor) =>
       getCountries({
         page: { cursor, size: 5 },
         filter: {
-          name: countryName,
+          name: debouncedQuery,
         },
         include: 'location',
       }),
     {
-      enabled: false,
+      enabled: !!(showSearchModal && debouncedQuery),
     },
   );
-
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setCountryName(e.target.value);
-  };
 
   const handleSearchClick = (e: MouseEvent) => {
     e.preventDefault();
 
-    paginatedCountries.refetch();
-
-    setShowResults(true);
+    setShowSearchModal(true);
   };
 
   const handleSearchClose = (e: MouseEvent) => {
     e.preventDefault();
-    setShowResults(false);
+
+    setShowSearchModal(false);
+
+    setSearchQuery('');
 
     paginatedCountries.remove();
+  };
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
   };
 
   const handleCountrySelect = (e: MouseEvent, country: Country) => {
     e.preventDefault();
 
-    setShowResults(false);
-
     setSelectedCountry(country);
+    setShowSearchModal(false);
 
     if (country.location) {
       setMapCenter({
@@ -75,7 +90,7 @@ const HomePage = () => {
         lng: country.location.longitude,
       });
     }
-
+    setSearchQuery('');
     paginatedCountries.remove();
   };
 
@@ -93,7 +108,7 @@ const HomePage = () => {
                     <div>
                       <p className='heading'>{item.description}</p>
                       <p className='title'>
-                        <Area>{item.value}</Area>
+                        <Number>{item.value}</Number>
                       </p>
                     </div>
                   </div>
@@ -114,16 +129,8 @@ const HomePage = () => {
                         className='input is-fullwidth is-large'
                         type='text'
                         placeholder='e.g. Australia'
-                        onChange={handleSearchChange}
-                      />
-                    </div>
-                    <div className='control'>
-                      <a
-                        className='button is-primary is-large'
                         onClick={handleSearchClick}
-                      >
-                        Search
-                      </a>
+                      />
                     </div>
                   </div>
                 </article>
@@ -149,26 +156,46 @@ const HomePage = () => {
         </div>
       </section>
 
-      <Modal active={showResults} onClose={handleSearchClose}>
-        {paginatedCountries.isLoading && <>Loading...</>}
+      <Modal
+        active={showSearchModal}
+        fixed={true}
+        onClose={handleSearchClose}
+        showFooter={paginatedCountries.hasMore || paginatedCountries.hasPrev}
+        footer={
+          <div className='is-fullwidth'>
+            <Pagination
+              hasMore={paginatedCountries.hasMore}
+              hasPrev={paginatedCountries.hasPrev}
+              onNext={() => paginatedCountries.next()}
+              onPrev={() => paginatedCountries.prev()}
+            />
+          </div>
+        }
+      >
+        <div className='control has-icons-left has-icons-right mb-5'>
+          <input
+            ref={inputElement}
+            type='text'
+            className='input is-fullwidth is-large'
+            placeholder='e.g. Australia'
+            onChange={handleSearchChange}
+          />
+          <span className='icon is-medium is-left'>
+            <Icon name='search' />
+          </span>
+        </div>
 
+        {!paginatedCountries.isSuccess && <>No recent search results</>}
         {paginatedCountries.isSuccess &&
           paginatedCountries.data?.map((country: Country) => (
             <div
               key={country.iso3166Alpha2}
-              className='box is-clickable'
+              className='box is-clickable is-hoverable'
               onClick={(e) => handleCountrySelect(e, country)}
             >
               {country.name}
             </div>
           ))}
-
-        <Pagination
-          hasMore={paginatedCountries.hasMore}
-          hasPrev={paginatedCountries.hasPrev}
-          onNext={() => paginatedCountries.next()}
-          onPrev={() => paginatedCountries.prev()}
-        />
       </Modal>
     </Page>
   );

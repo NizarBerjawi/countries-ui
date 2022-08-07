@@ -10,7 +10,7 @@ const ContinentsPage = () => {
   const { data, isLoading, next, prev, hasMore, hasPrev } =
     usePagination<Continent>(['continents'], (cursor) =>
       getPaginatedContinents({
-        page: { cursor, size: 5 },
+        page: { cursor, size: 7 },
       }),
     );
 
