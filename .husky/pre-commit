@@ -1,7 +1,7 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-if [[ ! $(cat /proc/1/sched | head -n 1 | grep init) ]]; then {
+if grep -q docker /proc/1/cgroup; then {
     # If the user is committing inside the docker container
     ./node_modules/.bin/lint-staged
 } else {

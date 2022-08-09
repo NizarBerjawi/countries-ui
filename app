@@ -183,7 +183,6 @@ lint_staged() {
 
   docker run \
     --interactive \
-    --tty \
     --rm \
     --volume "${PWD}:${WORKING_DIR}" \
     --workdir ${WORKING_DIR} \

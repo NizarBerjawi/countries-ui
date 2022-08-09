@@ -13,8 +13,8 @@ const usePagination = <T = unknown>(
   const key: QueryKey = [...queryKey, cursor];
 
   const query = useQuery(key, () => queryFn(cursor), {
-    ...options,
     keepPreviousData: true,
+    ...options,
   });
 
   const hasMore = !!query.data?.links.next;

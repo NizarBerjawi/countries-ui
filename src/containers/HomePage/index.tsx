@@ -55,6 +55,7 @@ const HomePage = () => {
       }),
     {
       enabled: !!(showSearchModal && debouncedQuery),
+      keepPreviousData: !!(showSearchModal && debouncedQuery),
     },
   );
 
@@ -82,7 +83,10 @@ const HomePage = () => {
     e.preventDefault();
 
     setSelectedCountry(country);
+
     setShowSearchModal(false);
+
+    setSearchQuery('');
 
     if (country.location) {
       setMapCenter({
@@ -90,7 +94,7 @@ const HomePage = () => {
         lng: country.location.longitude,
       });
     }
-    setSearchQuery('');
+
     paginatedCountries.remove();
   };
 
@@ -129,7 +133,9 @@ const HomePage = () => {
                         className='input is-fullwidth is-large'
                         type='text'
                         placeholder='e.g. Australia'
+                        value={selectedCountry?.name || ''}
                         onClick={handleSearchClick}
+                        readOnly
                       />
                     </div>
                   </div>
@@ -179,6 +185,7 @@ const HomePage = () => {
             className='input is-fullwidth is-large'
             placeholder='e.g. Australia'
             onChange={handleSearchChange}
+            value={searchQuery}
           />
           <span className='icon is-medium is-left'>
             <Icon name='search' />
@@ -186,6 +193,8 @@ const HomePage = () => {
         </div>
 
         {!paginatedCountries.isSuccess && <>No recent search results</>}
+        {paginatedCountries.data?.length === 0 && <>No results found</>}
+
         {paginatedCountries.isSuccess &&
           paginatedCountries.data?.map((country: Country) => (
             <div
