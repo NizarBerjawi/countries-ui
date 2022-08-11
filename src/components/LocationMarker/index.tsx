@@ -21,7 +21,7 @@ const options: IconOptions = {
 const LocationMarker = ({ position }: ILocationMarker) => {
   const map = useMap();
 
-  map.flyTo(position);
+  map.flyTo(position, 3);
 
   if (!position) {
     return <></>;

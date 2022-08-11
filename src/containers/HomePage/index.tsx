@@ -51,7 +51,7 @@ const HomePage = () => {
         filter: {
           name: debouncedQuery,
         },
-        include: 'location',
+        include: ['location'],
       }),
     {
       enabled: !!(showSearchModal && debouncedQuery),
@@ -145,9 +145,9 @@ const HomePage = () => {
                   <MapContainer
                     center={mapCenter}
                     zoom={3}
-                    scrollWheelZoom={false}
+                    scrollWheelZoom={true}
                     className='image is-4by3'
-                    style={{ zIndex: -1 }}
+                    style={{ zIndex: 1 }}
                   >
                     <TileLayer
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

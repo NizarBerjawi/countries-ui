@@ -24,4 +24,15 @@ const getCountry = async (
   return data;
 };
 
-export { getCountry, getCountries };
+const getCountryGeometry = async (
+  countryCode: Country['iso3166Alpha2'],
+  params?: LumenQuery,
+): Promise<LumenCollectionResponse<Country>> => {
+  const query = stringify(params, { addQueryPrefix: true });
+
+  const { data } = await http.get(`/countries/${countryCode}/geometry${query}`);
+
+  return data;
+};
+
+export { getCountry, getCountries, getCountryGeometry };
