@@ -1,7 +1,7 @@
 import React from 'react';
 import { getPaginatedContinents } from '@api/continentApi';
-import { Continent, Country } from 'src/types/app';
-import Table, { TableHeader } from '@components/Table';
+import { Continent } from 'src/types/app';
+import Table from '@components/Table';
 import Pagination from '@components/Pagination';
 import Page from '@components/Page';
 import usePagination from '../../hooks/usePagination';
@@ -25,12 +25,10 @@ const ContinentsPage = () => {
                 <div className='table-container'>
                   {!isLoading && data?.length && (
                     <Table
-                      headers={
-                        [
-                          { key: 'code', name: 'Code' },
-                          { key: 'name', name: 'Name' },
-                        ] as TableHeader<Continent | Country>[]
-                      }
+                      headers={[
+                        { key: 'code', name: 'Code' },
+                        { key: 'name', name: 'Name' },
+                      ]}
                       data={data}
                     />
                   )}

@@ -1,16 +1,16 @@
 export type LumenValue =
-  | null
+  | undefined
   | string
   | number
   | boolean
   | LumenResource
   | LumenCollection;
 
-export type LumenResource = {
-  [key: string]: LumenValue;
+export type LumenResource<T = unknown> = {
+  [key in keyof T]: LumenValue;
 };
 
-export type LumenCollection = LumenResource[];
+export type LumenCollection<T = unknown> = LumenResource<T>[];
 
 export type LumenPaginationLinks = {
   first: string;

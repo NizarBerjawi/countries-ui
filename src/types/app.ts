@@ -1,10 +1,12 @@
-export interface Continent {
+import { LumenCollection, LumenResource } from './api';
+
+export type Continent = LumenResource<{
   name: string;
   code: string;
-  countries?: Country[];
-}
+  countries?: LumenCollection<Country>;
+}>;
 
-export interface Country {
+export type Country = LumenResource<{
   name: string;
   iso3166Alpha2: string;
   iso3166Alpha3: string;
@@ -16,45 +18,45 @@ export interface Country {
   currency?: Currency;
   continent?: Continent;
   flag?: Flag;
-  timeZones?: TimeZone[];
-  neighbours?: Country[];
-  languages?: Language[];
-  alternateNames?: AlternateName[];
-}
+  timeZones?: LumenCollection<TimeZone>;
+  neighbours?: LumenCollection<Country>;
+  languages?: LumenCollection<Language>;
+  alternateNames?: LumenCollection<AlternateName>;
+}>;
 
-export interface Location {
+export type Location = LumenResource<{
   latitude: number;
   longitude: number;
-}
+}>;
 
-export interface Currency {
+export type Currency = LumenResource<{
   code: string;
   name: string;
-  countries?: Country[];
-}
+  countries?: LumenCollection<Country>;
+}>;
 
-export interface Flag {
+export type Flag = LumenResource<{
   filename: string;
   url: string;
   country?: Country;
-}
+}>;
 
-export interface TimeZone {
+export type TimeZone = LumenResource<{
   code: string;
   timeZone: string;
   gmtOffset: string;
   country?: Country;
-}
+}>;
 
-export interface Language {
+export type Language = LumenResource<{
   name: string;
   'iso639.1': string;
   'iso639.2': string;
   'iso639.3': string;
-  countries: Country[];
-}
+  countries: LumenCollection<Country>;
+}>;
 
-export interface AlternateName {
+export type AlternateName = LumenResource<{
   name: string;
   isPrefferedName: string;
   isShortName: string;
@@ -62,39 +64,39 @@ export interface AlternateName {
   isColliquial: boolean;
   language?: Language;
   place?: Place;
-}
+}>;
 
-export interface Place {
+export type Place = LumenResource<{
   geonameId: number;
   name: string;
   asciiName: string;
   population: number;
   elevation: number;
   dem: number;
-  alternateNames?: AlternateName[];
+  alternateNames?: LumenCollection<AlternateName>;
   timeZone?: TimeZone;
   featureCode?: FeatureCode;
   featureClass?: FeatureClass;
   country?: Country;
   location?: Location;
-}
+}>;
 
-export interface FeatureCode {
+export type FeatureCode = LumenResource<{
   code: string;
   shortDescription: string;
   fullDescription: string;
   featureClass?: FeatureClass;
-}
+}>;
 
-export interface FeatureClass {
+export type FeatureClass = LumenResource<{
   code: string;
   description: string;
-  featureCodes?: FeatureCode[];
-}
+  featureCodes?: LumenCollection<FeatureCode>;
+}>;
 
-export interface StatisticsResource {
+export type StatisticsResource = LumenResource<{
   key: string;
   description: string;
   value: number;
   type: 'count' | 'sum';
-}
+}>;

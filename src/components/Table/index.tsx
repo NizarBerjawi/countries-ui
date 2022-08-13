@@ -1,20 +1,20 @@
 import TableData from '@components/TableData';
 import TableRow from '@components/TableRow';
-import React, { PropsWithChildren } from 'react';
-import { LumenResource, LumenValue } from 'src/types/api';
+import React from 'react';
+import { LumenCollection } from 'src/types/api';
 
 export interface ITable {
   headers: TableHeader[];
-  data: Record<string, any>[];
+  data: { [key in string]: string }[];
 }
 
-export type TableHeader<T = LumenResource> = {
-  key: keyof T;
+export interface TableHeader {
+  key: string;
   name: string;
   type?: 'boolean' | 'number' | 'string';
-};
+}
 
-const Table = (props: PropsWithChildren<ITable>) => (
+const Table = (props: ITable) => (
   <table className='table is-striped is-fullwidth'>
     <thead>
       <tr>
@@ -24,15 +24,13 @@ const Table = (props: PropsWithChildren<ITable>) => (
       </tr>
     </thead>
     <tbody>
-      {props.data &&
-        props.data.map((item, index) => (
-          <TableRow key={index}>
-            {props.headers &&
-              props.headers.map(({ key }) => (
-                <TableData key={`${key}-${index}`}>{item[key]}</TableData>
-              ))}
-          </TableRow>
-        ))}
+      {props.data.map((item, index) => (
+        <TableRow key={index}>
+          {props.headers.map(({ key }) => (
+            <TableData key={`${key}-${index}`}>{item[key]}</TableData>
+          ))}
+        </TableRow>
+      ))}
     </tbody>
   </table>
 );
