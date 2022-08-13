@@ -1,188 +1,212 @@
-import React, { useState } from 'react';
-import { useQuery } from 'react-query';
-import { getPaginatedContinents } from '@api/continentApi';
-import { getPaginatedCountries } from '@api/countriesApi';
-import { Continent, Country } from 'src/types/app';
-import LoadMore from '@components/LoadMore';
-import ProgressBar from '@components/ProgressBar';
-import NavBar from '@components/NavBar';
-import { INavBarItem } from '@components/NavBarItem';
-import Table, { TableHeader } from '@components/Table';
+import React, {
+  ChangeEvent,
+  MouseEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { LatLngLiteral } from 'leaflet';
+import { MapContainer, TileLayer } from 'react-leaflet';
+import LocationMarker from '@components/LocationMarker';
+import Icon from '@components/Icon';
+import Pagination from '@components/Pagination';
+import { getHomepageStatistics } from '@api/statisticsApi';
+import Number from '@components/Number';
+import Page from '@components/Page';
+import { getCountries } from '@api/countriesApi';
+import Modal from '@components/Modal';
+import { Country } from 'src/types/app';
+import usePagination from '../../hooks/usePagination';
+import { useDebounce } from 'use-debounce';
 
-const FIRST_PAGE = 1;
-const LINKS: INavBarItem[] = [
-  { path: '/', label: 'Home' },
-  { path: '/continents', label: 'Continents' },
-  { path: '/countries', label: 'Countries' },
-  { path: '/languages', label: 'Languages' },
-  { path: '/currencies', label: 'Currencies' },
-  { path: '/timeZones', label: 'Time Zones' },
-  { path: '/statistics', label: 'Statistics' },
-];
+const CENTER = {
+  lat: 7.18805555556,
+  lng: 21.0936111111,
+};
 
 const HomePage = () => {
-  const [pages, setPages] = useState<{ [key: string]: number }>({
-    continents: FIRST_PAGE,
-    countries: FIRST_PAGE,
-  });
+  const [mapCenter, setMapCenter] = useState<LatLngLiteral>(CENTER);
+  const inputElement = useRef<HTMLInputElement>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery] = useDebounce(searchQuery, 500);
+  const [selectedCountry, setSelectedCountry] = useState<Country>();
+  const [showSearchModal, setShowSearchModal] = useState(false);
 
-  const continentsQuery = useQuery(
-    ['continents', pages.continents],
-    () =>
-      getPaginatedContinents({
-        page: { number: pages.continents },
-        include: 'countries',
+  useEffect(() => {
+    if (inputElement.current) {
+      inputElement.current.focus();
+    }
+  }, [showSearchModal]);
+
+  const statisticsQuery = useQuery(['statistics'], () =>
+    getHomepageStatistics(),
+  );
+
+  const paginatedCountries = usePagination<Country>(
+    ['countries', debouncedQuery],
+    (cursor) =>
+      getCountries({
+        page: { cursor, size: 5 },
+        filter: {
+          name: debouncedQuery,
+        },
+        include: ['location'],
       }),
     {
-      keepPreviousData: true,
+      enabled: !!(showSearchModal && debouncedQuery),
+      keepPreviousData: !!(showSearchModal && debouncedQuery),
     },
   );
 
-  const countriesQuery = useQuery(
-    ['countries', pages.countries],
-    () =>
-      getPaginatedCountries({
-        page: { number: pages.countries },
-      }),
-    {
-      keepPreviousData: true,
-    },
-  );
+  const handleSearchClick = (e: MouseEvent) => {
+    e.preventDefault();
 
-  const getQuery = (queryKey: string) => {
-    switch (queryKey) {
-      case 'continents':
-        return continentsQuery;
-      case 'countries':
-        return countriesQuery;
-      default:
-        throw new Error('Invalid query');
-    }
+    setShowSearchModal(true);
   };
 
-  const hasMore = (queryKey: string) =>
-    !!getQuery(queryKey).data?.data.links.next;
+  const handleSearchClose = (e: MouseEvent) => {
+    e.preventDefault();
 
-  const loadMore = (queryKey: string) => {
-    const query = getQuery(queryKey);
+    setShowSearchModal(false);
 
-    if (!query.isPreviousData && hasMore(queryKey)) {
-      setPages((prevPages) => ({
-        ...prevPages,
-        [`${queryKey}`]: prevPages[`${queryKey}`] + 1,
-      }));
-    }
+    setSearchQuery('');
+
+    paginatedCountries.remove();
   };
 
-  if (continentsQuery.isLoading && countriesQuery.isLoading) {
-    return (
-      <ProgressBar size='small' color='primary' max='100' percentage='15%' />
-    );
-  }
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
-  const continents = continentsQuery?.data?.data.data || [];
-  const countries = countriesQuery?.data?.data.data || [];
+  const handleCountrySelect = (e: MouseEvent, country: Country) => {
+    e.preventDefault();
+
+    setSelectedCountry(country);
+
+    setShowSearchModal(false);
+
+    setSearchQuery('');
+
+    if (country.location) {
+      setMapCenter({
+        lat: country.location.latitude,
+        lng: country.location.longitude,
+      });
+    }
+
+    paginatedCountries.remove();
+  };
+
+  const statistics = statisticsQuery?.data?.data || [];
 
   return (
-    <div className='container is-fluid'>
-      <NavBar hasBrand links={LINKS} />
+    <Page>
       <section className='section'>
-        <div className='tile is-ancestor'>
-          <div className='tile is-vertical is-8'>
-            <div className='tile is-parent'>
-              <article className='tile is-child notification'>
-                <p className='title'>Countries</p>
-                <Table
-                  headers={
-                    [
-                      { key: 'iso3166Alpha2', name: 'ISO 3166-2' },
-                      { key: 'name', name: 'Name' },
-                      { key: 'population', name: 'Population' },
-                      { key: 'area', name: 'Area' },
-                      { key: 'phoneCode', name: 'Phone Code' },
-                    ] as TableHeader<Continent | Country>[]
-                  }
-                  data={countries}
-                />
-
-                {hasMore('countries') && (
-                  <LoadMore
-                    label='Load More...'
-                    size='large'
-                    onClick={() => loadMore('countries')}
-                  />
-                )}
-              </article>
-            </div>
-
-            <div className='tile is-parent'>
-              <article className='tile is-child notification'>
-                <p className='title'>Continents</p>
-                <table className='table is-fullwidth has-background-light'>
-                  <thead>
-                    <tr>
-                      <th>Code</th>
-                      <th>Name</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {continents.map((continent: Continent) => (
-                      <tr key={continent.code}>
-                        <td>{continent.code}</td>
-                        <td>{continent.name}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                {hasMore('continents') && (
-                  <LoadMore
-                    label='Load More...'
-                    size='large'
-                    onClick={() => loadMore('continents')}
-                  />
-                )}
-              </article>
-            </div>
-            <div className='tile'>
-              <div className='tile is-parent is-vertical'>
-                <article className='tile is-child notification is-warning'>
-                  <p className='title'>...tiles</p>
-                  <p className='subtitle'>Bottom tile</p>
+        <div className='is-ancestor'>
+          <div className='tile is-parent is-12'>
+            <div className='tile box'>
+              {statistics.map((item) => (
+                <article key={item.key} className='tile is-child is-2'>
+                  <div className='level-item has-text-centered'>
+                    <div>
+                      <p className='heading'>{item.description}</p>
+                      <p className='title'>
+                        <Number>{item.value}</Number>
+                      </p>
+                    </div>
+                  </div>
                 </article>
-              </div>
-
-              <div className='tile is-parent'>
-                <article className='tile is-child notification is-info'>
-                  <p className='title'>Middle tile</p>
-                  <p className='subtitle'>With an image</p>
-                  <figure className='image is-4by3'>
-                    <img src='https://bulma.io/images/placeholders/640x480.png' />
-                  </figure>
-                </article>
-              </div>
-            </div>
-
-            <div className='tile is-parent'>
-              <article className='tile is-child notification is-danger'>
-                <p className='title'>Wide tile</p>
-                <p className='subtitle'>Aligned with the right tile</p>
-                <div className='content'></div>
-              </article>
+              ))}
             </div>
           </div>
-          <div className='tile is-parent'>
-            <article className='tile is-child notification is-success'>
-              <div className='content'>
-                <p className='title'>Tall tile</p>
-                <p className='subtitle'>With even more content</p>
-                <div className='content'></div>
+        </div>
+
+        <div className='is-ancestor'>
+          <div className='tile'>
+            <div className='tile is-parent is-justify-content-center	'>
+              <div className='tile is-vertical'>
+                <article className='tile is-child'>
+                  <div className='field has-addons'>
+                    <div className='control is-expanded'>
+                      <input
+                        className='input is-fullwidth is-large'
+                        type='text'
+                        placeholder='e.g. Australia'
+                        value={selectedCountry?.name || ''}
+                        onClick={handleSearchClick}
+                        readOnly
+                      />
+                    </div>
+                  </div>
+                </article>
+
+                <div className='tile is-child'>
+                  <MapContainer
+                    center={mapCenter}
+                    zoom={3}
+                    scrollWheelZoom={true}
+                    className='image is-4by3'
+                    style={{ zIndex: 1 }}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                    />
+                    <LocationMarker position={mapCenter} />
+                  </MapContainer>
+                </div>
               </div>
-            </article>
+            </div>
           </div>
         </div>
       </section>
-    </div>
+
+      <Modal
+        active={showSearchModal}
+        fixed={true}
+        onClose={handleSearchClose}
+        showFooter={paginatedCountries.hasMore || paginatedCountries.hasPrev}
+        footer={
+          <div className='is-fullwidth'>
+            <Pagination
+              hasMore={paginatedCountries.hasMore}
+              hasPrev={paginatedCountries.hasPrev}
+              onNext={() => paginatedCountries.next()}
+              onPrev={() => paginatedCountries.prev()}
+            />
+          </div>
+        }
+      >
+        <div className='control has-icons-left has-icons-right mb-5'>
+          <input
+            ref={inputElement}
+            type='text'
+            className='input is-fullwidth is-large'
+            placeholder='e.g. Australia'
+            onChange={handleSearchChange}
+            value={searchQuery}
+          />
+          <span className='icon is-medium is-left'>
+            <Icon name='search' />
+          </span>
+        </div>
+
+        {!paginatedCountries.isSuccess && <>No recent search results</>}
+        {paginatedCountries.data?.length === 0 && <>No results found</>}
+
+        {paginatedCountries.isSuccess &&
+          paginatedCountries.data?.map((country: Country) => (
+            <div
+              key={country.iso3166Alpha2}
+              className='box is-clickable is-hoverable'
+              onClick={(e) => handleCountrySelect(e, country)}
+            >
+              {country.name}
+            </div>
+          ))}
+      </Modal>
+    </Page>
   );
 };
 

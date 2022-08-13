@@ -91,3 +91,10 @@ export interface FeatureClass {
   description: string;
   featureCodes?: FeatureCode[];
 }
+
+export interface StatisticsResource {
+  key: string;
+  description: string;
+  value: number;
+  type: 'count' | 'sum';
+}

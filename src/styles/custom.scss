@@ -1,0 +1,14 @@
+// Custom styles go here
+
+.box.is-hoverable:hover {
+    background-color: #fafafa;
+}
+
+.is-fullwidth {
+    width: 100%;
+}
+
+.modal.is-fixed {
+    padding-top: 60px;
+    justify-content: start;
+}

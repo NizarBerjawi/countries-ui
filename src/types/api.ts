@@ -1,5 +1,13 @@
+export type LumenValue =
+  | null
+  | string
+  | number
+  | boolean
+  | LumenResource
+  | LumenCollection;
+
 export type LumenResource = {
-  [key: string]: LumenResource | LumenCollection;
+  [key: string]: LumenValue;
 };
 
 export type LumenCollection = LumenResource[];
@@ -19,13 +27,13 @@ export type LumenMetaData = {
   to?: number;
 };
 
-export type LumenCollectionResponse<T> = {
+export type LumenCollectionResponse<T = LumenCollection> = {
   data: T[];
   links: LumenPaginationLinks;
   meta: LumenMetaData;
 };
 
-export type LumenResourceResponse<T> = {
+export type LumenResourceResponse<T = LumenResource> = {
   data: T;
 };
 
