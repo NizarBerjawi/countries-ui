@@ -4,7 +4,7 @@ import { CountryTable } from './Table';
 
 const CountriesPage = () => (
   <Page>
-    <section className='section'>
+    <section>
       <div className='is-ancestor'>
         <div className='tile is-12'>
           <div className='tile'>

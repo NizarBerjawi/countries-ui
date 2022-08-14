@@ -4,7 +4,7 @@ import { ContinentTable } from './Table';
 
 const ContinentsPage = () => (
   <Page>
-    <section className='section'>
+    <section>
       <div className='is-ancestor'>
         <div className='tile is-12'>
           <div className='tile is-parent'>

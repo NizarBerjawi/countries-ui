@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { LumenCollection, LumenResource } from 'src/types/api';
-import TableData from '@components/TableData';
-import TableRow from '@components/TableRow';
 
 export interface ITable<T> {
   headers: TableHeader<T>[];
-  data: LumenCollection<T>;
+  data?: LumenCollection<T>;
 }
 
 export interface TableHeader<T> {
@@ -14,7 +12,10 @@ export interface TableHeader<T> {
   type?: 'boolean' | 'number' | 'string';
 }
 
-const Table = <T extends LumenResource>({ headers, data }: ITable<T>) => (
+const Table = <T extends LumenResource>({
+  headers,
+  children,
+}: PropsWithChildren<ITable<T>>) => (
   <table className='table is-striped is-fullwidth'>
     <thead>
       <tr>
@@ -23,15 +24,7 @@ const Table = <T extends LumenResource>({ headers, data }: ITable<T>) => (
         ))}
       </tr>
     </thead>
-    <tbody>
-      {data.map((item, index) => (
-        <TableRow key={index}>
-          {headers.map(({ key }: TableHeader<T>) => (
-            <TableData key={`${key as string}-${index}`}>{item[key]}</TableData>
-          ))}
-        </TableRow>
-      ))}
-    </tbody>
+    <tbody>{children}</tbody>
   </table>
 );
 

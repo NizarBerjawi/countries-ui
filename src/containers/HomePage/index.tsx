@@ -102,7 +102,7 @@ const HomePage = () => {
 
   return (
     <Page>
-      <section className='section'>
+      <section>
         <div className='is-ancestor'>
           <div className='tile is-parent is-12'>
             <div className='tile box'>
