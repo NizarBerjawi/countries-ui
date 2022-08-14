@@ -1,7 +1,7 @@
-import NavBarBurger from '@components/NavBarBurger';
-import NavBarItem, { INavBarItem } from '@components/NavBarItem';
 import classNames from 'classnames';
 import React, { MouseEventHandler, PropsWithChildren, useState } from 'react';
+import NavBarBurger from '@components/NavBarBurger';
+import NavBarItem, { INavBarItem } from '@components/NavBarItem';
 
 export interface INavBar {
   links: INavBarItem[];

@@ -1,10 +1,10 @@
-import HomePage from '../HomePage';
-import React, { ReactElement } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import CountriesPage from '../CountriesPage';
+import React, { ReactElement } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import ContinentsPage from '../ContinentsPage';
+import CountriesPage from '../CountriesPage';
+import HomePage from '../HomePage';
 
 const App = (): ReactElement => {
   const queryClient = new QueryClient({

@@ -1,7 +1,8 @@
-import TableData from '@components/TableData';
-import TableRow from '@components/TableRow';
 import React from 'react';
 import { LumenCollection, LumenResource } from 'src/types/api';
+import TableData from '@components/TableData';
+import TableRow from '@components/TableRow';
+
 export interface ITable<T> {
   headers: TableHeader<T>[];
   data: LumenCollection<T>;

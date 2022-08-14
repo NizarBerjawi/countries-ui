@@ -1,7 +1,7 @@
-import http from '@utils/http';
 import { stringify } from 'qs';
-import { LumenQuery, LumenCollectionResponse } from 'src/types/api';
+import { LumenCollectionResponse, LumenQuery } from 'src/types/api';
 import { Continent } from 'src/types/app';
+import http from '@utils/http';
 
 const getPaginatedContinents = async (
   params?: LumenQuery,

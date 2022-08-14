@@ -23,5 +23,16 @@
     "singleQuote": true,
     "tabWidth": 2,
     "trailingComma": "all",
-    "useTabs": false
+    "useTabs": false,
+    "importOrder": [
+        "<THIRD_PARTY_MODULES>",
+        "^@api/(.*)$",
+        "^@components/(.*)$",
+        "^@containers/(.*)$",
+        "^@hooks/(.*)$",
+        "^@utils/(.*)$",
+        "^[./]"
+    ],
+    "importOrderSeparation": false,
+    "importOrderSortSpecifiers": true
 }

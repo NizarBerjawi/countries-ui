@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from 'react';
-import { INavBarItem } from '@components/NavBarItem';
 import NavBar from '@components/NavBar';
+import { INavBarItem } from '@components/NavBarItem';
 
 const LINKS: INavBarItem[] = [
   { to: '/', label: 'Home' },

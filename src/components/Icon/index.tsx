@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
 import { replace } from 'feather-icons';
+import React, { useEffect } from 'react';
 
 interface IIconProps {
   name: string;

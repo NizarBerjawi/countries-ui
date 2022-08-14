@@ -1,5 +1,5 @@
-import Number from '@components/Number';
 import React, { PropsWithChildren } from 'react';
+import Number from '@components/Number';
 
 export interface IArea {
   children?: number;

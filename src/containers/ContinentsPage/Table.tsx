@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react';
-import usePagination from '../../hooks/usePagination';
-import { getPaginatedContinents } from '@api/continentApi';
 import { Continent } from 'src/types/app';
+import { getPaginatedContinents } from '@api/continentApi';
 import Pagination from '@components/Pagination';
 import Table, { TableHeader } from '@components/Table';
+import usePagination from '../../hooks/usePagination';
 
 const HEADERS: TableHeader<Continent>[] = [
   { key: 'code', name: 'Code' },

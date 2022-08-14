@@ -1,7 +1,7 @@
-import http from '@utils/http';
 import { stringify } from 'qs';
 import { LumenQuery, LumenResourceResponse } from 'src/types/api';
 import { StatisticsResource } from 'src/types/app';
+import http from '@utils/http';
 
 const getHomepageStatistics = async (
   params?: LumenQuery,

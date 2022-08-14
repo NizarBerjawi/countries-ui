@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { useQuery, QueryKey, UseQueryOptions } from '@tanstack/react-query';
-import { LumenCollectionResponse, LumenQuery } from 'src/types/api';
+import { QueryKey, UseQueryOptions, useQuery } from '@tanstack/react-query';
 import { parse } from 'qs';
+import { useState } from 'react';
+import { LumenCollectionResponse, LumenQuery } from 'src/types/api';
 
 const usePagination = <T = unknown>(
   queryKey: QueryKey,

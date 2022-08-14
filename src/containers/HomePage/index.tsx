@@ -1,3 +1,5 @@
+import { useQuery } from '@tanstack/react-query';
+import { LatLngLiteral } from 'leaflet';
 import React, {
   ChangeEvent,
   MouseEvent,
@@ -5,20 +7,18 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { LatLngLiteral } from 'leaflet';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import LocationMarker from '@components/LocationMarker';
-import Icon from '@components/Icon';
-import Pagination from '@components/Pagination';
+import { Country } from 'src/types/app';
+import { useDebounce } from 'use-debounce';
+import { getCountries } from '@api/countriesApi';
 import { getHomepageStatistics } from '@api/statisticsApi';
+import Icon from '@components/Icon';
+import LocationMarker from '@components/LocationMarker';
+import Modal from '@components/Modal';
 import Number from '@components/Number';
 import Page from '@components/Page';
-import { getCountries } from '@api/countriesApi';
-import Modal from '@components/Modal';
-import { Country } from 'src/types/app';
+import Pagination from '@components/Pagination';
 import usePagination from '../../hooks/usePagination';
-import { useDebounce } from 'use-debounce';
 
 const CENTER: LatLngLiteral = {
   lat: 7.18805555556,

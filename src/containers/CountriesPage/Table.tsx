@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react';
-import usePagination from '../../hooks/usePagination';
-import { getCountries } from '@api/countriesApi';
 import { Country } from 'src/types/app';
+import { getCountries } from '@api/countriesApi';
 import Pagination from '@components/Pagination';
 import Table, { TableHeader } from '@components/Table';
+import usePagination from '../../hooks/usePagination';
 
 const HEADERS: TableHeader<Country>[] = [
   { key: 'iso3166Alpha2', name: 'ISO 3166-2' },

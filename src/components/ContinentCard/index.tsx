@@ -1,9 +1,9 @@
-import React from 'react';
-import { Continent } from 'src/types/app';
-import { GeoJSON, MapContainer, FeatureGroup } from 'react-leaflet';
-import { PathOptions } from 'leaflet';
-import continentLocations from '../../data/continentLocations';
 import type { FeatureCollection } from 'geojson';
+import { PathOptions } from 'leaflet';
+import React from 'react';
+import { FeatureGroup, GeoJSON, MapContainer } from 'react-leaflet';
+import { Continent } from 'src/types/app';
+import continentLocations from '../../data/continentLocations';
 
 interface IContinentCardProps {
   continent: Continent;
