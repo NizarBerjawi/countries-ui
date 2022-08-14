@@ -1,14 +1,8 @@
-export type LumenValue =
-  | undefined
-  | string
-  | number
-  | boolean
-  | LumenResource
-  | LumenCollection;
+export type LumenValue = undefined | string | number | boolean;
+// | LumenResource
+// | LumenCollection;
 
-export type LumenResource<T = unknown> = {
-  [key in keyof T]: LumenValue;
-};
+export type LumenResource<T = unknown> = T;
 
 export type LumenCollection<T = unknown> = LumenResource<T>[];
 

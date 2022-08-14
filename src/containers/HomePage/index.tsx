@@ -20,7 +20,7 @@ import { Country } from 'src/types/app';
 import usePagination from '../../hooks/usePagination';
 import { useDebounce } from 'use-debounce';
 
-const CENTER = {
+const CENTER: LatLngLiteral = {
   lat: 7.18805555556,
   lng: 21.0936111111,
 };
