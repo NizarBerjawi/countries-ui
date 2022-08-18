@@ -1,12 +1,12 @@
-import { LumenCollection, LumenResource } from './api';
+import { Collection, Resource } from './api';
 
-export type Continent = LumenResource<{
+export type Continent = Resource<{
   name: string;
   code: string;
-  countries?: LumenCollection<Country>;
+  countries?: Collection<Country>;
 }>;
 
-export type Country = LumenResource<{
+export type Country = Resource<{
   name: string;
   iso3166Alpha2: string;
   iso3166Alpha3: string;
@@ -18,45 +18,45 @@ export type Country = LumenResource<{
   currency?: Currency;
   continent?: Continent;
   flag?: Flag;
-  timeZones?: LumenCollection<TimeZone>;
-  neighbours?: LumenCollection<Country>;
-  languages?: LumenCollection<Language>;
-  alternateNames?: LumenCollection<AlternateName>;
+  timeZones?: Collection<TimeZone>;
+  neighbours?: Collection<Country>;
+  languages?: Collection<Language>;
+  alternateNames?: Collection<AlternateName>;
 }>;
 
-export type Location = LumenResource<{
+export type Location = Resource<{
   latitude: number;
   longitude: number;
 }>;
 
-export type Currency = LumenResource<{
+export type Currency = Resource<{
   code: string;
   name: string;
-  countries?: LumenCollection<Country>;
+  countries?: Collection<Country>;
 }>;
 
-export type Flag = LumenResource<{
+export type Flag = Resource<{
   filename: string;
   url: string;
   country?: Country;
 }>;
 
-export type TimeZone = LumenResource<{
+export type TimeZone = Resource<{
   code: string;
   timeZone: string;
   gmtOffset: string;
   country?: Country;
 }>;
 
-export type Language = LumenResource<{
+export type Language = Resource<{
   name: string;
   'iso639.1': string;
   'iso639.2': string;
   'iso639.3': string;
-  countries: LumenCollection<Country>;
+  countries: Collection<Country>;
 }>;
 
-export type AlternateName = LumenResource<{
+export type AlternateName = Resource<{
   name: string;
   isPrefferedName: string;
   isShortName: string;
@@ -66,14 +66,14 @@ export type AlternateName = LumenResource<{
   place?: Place;
 }>;
 
-export type Place = LumenResource<{
+export type Place = Resource<{
   geonameId: number;
   name: string;
   asciiName: string;
   population: number;
   elevation: number;
   dem: number;
-  alternateNames?: LumenCollection<AlternateName>;
+  alternateNames?: Collection<AlternateName>;
   timeZone?: TimeZone;
   featureCode?: FeatureCode;
   featureClass?: FeatureClass;
@@ -81,20 +81,20 @@ export type Place = LumenResource<{
   location?: Location;
 }>;
 
-export type FeatureCode = LumenResource<{
+export type FeatureCode = Resource<{
   code: string;
   shortDescription: string;
   fullDescription: string;
   featureClass?: FeatureClass;
 }>;
 
-export type FeatureClass = LumenResource<{
+export type FeatureClass = Resource<{
   code: string;
   description: string;
-  featureCodes?: LumenCollection<FeatureCode>;
+  featureCodes?: Collection<FeatureCode>;
 }>;
 
-export type StatisticsResource = LumenResource<{
+export type StatisticsResource = Resource<{
   key: string;
   description: string;
   value: number;

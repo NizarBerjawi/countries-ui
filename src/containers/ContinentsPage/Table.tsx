@@ -3,14 +3,11 @@ import { Continent } from 'src/types/app';
 import { getPaginatedContinents } from '@api/continentApi';
 import Pagination from '@components/Pagination';
 import Table, { TableHeader } from '@components/Table';
-import TableData from '@components/TableData';
-import TableRow from '@components/TableRow';
 import usePagination from '../../hooks/usePagination';
 
-const HEADERS: TableHeader<Continent & { action: boolean }>[] = [
-  { key: 'code', name: 'Code' },
-  { key: 'name', name: 'Name' },
-  { key: 'action', name: '' },
+const HEADERS: TableHeader<Continent>[] = [
+  { key: 'code', name: 'Code', type: 'string' },
+  { key: 'name', name: 'Name', type: 'string' },
 ];
 
 const ContinentTable = () => {
@@ -25,17 +22,7 @@ const ContinentTable = () => {
     <Fragment>
       <div className='table-container'>
         {isSuccess && data?.length && (
-          <Table<Continent> headers={HEADERS}>
-            {data.map((item, index) => (
-              <TableRow key={index}>
-                {HEADERS.map(({ key }) => (
-                  <TableData key={`${key as string}-${index}`}>
-                    {item[key]}
-                  </TableData>
-                ))}
-              </TableRow>
-            ))}
-          </Table>
+          <Table<Continent> headers={HEADERS} data={data} />
         )}
       </div>
       <Pagination

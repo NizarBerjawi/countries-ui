@@ -1,19 +1,19 @@
-export type LumenValue = undefined | string | number | boolean;
-// | LumenResource
-// | LumenCollection;
+export type BaseResource = {
+  [key in string]: string | number | boolean;
+};
 
-export type LumenResource<T = unknown> = T;
+export type Resource<T = BaseResource> = T;
 
-export type LumenCollection<T = unknown> = LumenResource<T>[];
+export type Collection<T = BaseResource> = Resource<T>[];
 
-export type LumenPaginationLinks = {
+export type PaginationLinks = {
   first: string;
   last: string;
   prev: string;
   next: string;
 };
 
-export type LumenMetaData = {
+export type PaginationMetaData = {
   currentPage?: number;
   from?: number;
   path: string;
@@ -21,17 +21,17 @@ export type LumenMetaData = {
   to?: number;
 };
 
-export type LumenCollectionResponse<T = LumenCollection> = {
+export type CollectionResponse<T = Collection> = {
   data: T[];
-  links: LumenPaginationLinks;
-  meta: LumenMetaData;
+  links: PaginationLinks;
+  meta: PaginationMetaData;
 };
 
-export type LumenResourceResponse<T = LumenResource> = {
+export type ResourceResponse<T = Resource> = {
   data: T;
 };
 
-export type LumenQuery = {
+export type Query = {
   include?: string | string[];
   filter?: {
     [key: string]: string;

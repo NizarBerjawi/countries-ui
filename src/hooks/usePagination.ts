@@ -1,12 +1,12 @@
 import { QueryKey, UseQueryOptions, useQuery } from '@tanstack/react-query';
 import { parse } from 'qs';
 import { useState } from 'react';
-import { LumenCollectionResponse, LumenQuery } from 'src/types/api';
+import { CollectionResponse, Query } from 'src/types/api';
 
 const usePagination = <T = unknown>(
   queryKey: QueryKey,
-  queryFn: (cursor?: string) => Promise<LumenCollectionResponse<T>>,
-  options: UseQueryOptions<LumenCollectionResponse<T>> = {},
+  queryFn: (cursor?: string) => Promise<CollectionResponse<T>>,
+  options: UseQueryOptions<CollectionResponse<T>> = {},
 ) => {
   const [cursor, setCursor] = useState<string | undefined>();
 
@@ -54,7 +54,7 @@ const usePagination = <T = unknown>(
       return;
     }
 
-    const search: LumenQuery = parse(new URL(link).search, {
+    const search: Query = parse(new URL(link).search, {
       ignoreQueryPrefix: true,
     });
 

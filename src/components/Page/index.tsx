@@ -17,7 +17,9 @@ const Page = (props: PropsWithChildren) => (
     <NavBar hasBrand links={LINKS} />
 
     <section className='hero'>
-      <div className='hero-body'>{props.children}</div>
+      <div className='hero-body'>
+        <div className='container'>{props.children}</div>
+      </div>
     </section>
   </>
 );

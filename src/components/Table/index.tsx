@@ -1,21 +1,19 @@
-import React, { PropsWithChildren } from 'react';
-import { LumenCollection, LumenResource } from 'src/types/api';
+import React from 'react';
+import { Collection, Resource } from 'src/types/api';
+import TableData from '@components/TableData';
+import TableRow from '@components/TableRow';
 
 export interface ITable<T> {
   headers: TableHeader<T>[];
-  data?: LumenCollection<T>;
+  data?: Collection<T>;
 }
-
 export interface TableHeader<T> {
   key: keyof T;
   name: string;
-  type?: 'boolean' | 'number' | 'string';
+  type?: 'area' | 'number' | 'string';
 }
 
-const Table = <T extends LumenResource>({
-  headers,
-  children,
-}: PropsWithChildren<ITable<T>>) => (
+const Table = <T extends Resource>({ headers, data }: ITable<T>) => (
   <table className='table is-striped is-fullwidth'>
     <thead>
       <tr>
@@ -24,7 +22,18 @@ const Table = <T extends LumenResource>({
         ))}
       </tr>
     </thead>
-    <tbody>{children}</tbody>
+    <tbody>
+      {data &&
+        data.map((item, index) => (
+          <TableRow key={index}>
+            {headers.map(({ key, type }) => (
+              <TableData key={`${String(key)}-${index}`} type={type}>
+                {item[key]}
+              </TableData>
+            ))}
+          </TableRow>
+        ))}
+    </tbody>
   </table>
 );
 

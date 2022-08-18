@@ -1,11 +1,11 @@
 import { stringify } from 'qs';
-import { LumenCollectionResponse, LumenQuery } from 'src/types/api';
+import { CollectionResponse, Query } from 'src/types/api';
 import { Continent } from 'src/types/app';
 import http from '@utils/http';
 
 const getPaginatedContinents = async (
-  params?: LumenQuery,
-): Promise<LumenCollectionResponse<Continent>> => {
+  params?: Query,
+): Promise<CollectionResponse<Continent>> => {
   const query = stringify(params, { addQueryPrefix: true });
 
   const { data } = await http.get(`/continents${query}`);

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import axios from 'axios';
-import { LumenCollectionResponse, LumenResourceResponse } from 'src/types/api';
+import { CollectionResponse, ResourceResponse } from 'src/types/api';
 
 axios.defaults.baseURL = process.env.BASE_URL;
 axios.defaults.headers.common.Accept = 'application/json';
@@ -8,9 +8,7 @@ axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 axios.defaults.transformResponse = [
   (data: string) => {
-    const response = JSON.parse(data) as
-      | LumenCollectionResponse
-      | LumenResourceResponse;
+    const response = JSON.parse(data) as CollectionResponse | ResourceResponse;
 
     return response;
   },
