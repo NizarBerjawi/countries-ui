@@ -7,6 +7,10 @@ interface ITableData {
 }
 
 const TableData = ({ type, children }: PropsWithChildren<ITableData>) => {
+  if (!children) {
+    return <td>-</td>;
+  }
+
   if (typeof children === 'number') {
     if (type === 'area') {
       return (
