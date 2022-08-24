@@ -106,18 +106,20 @@ const HomePage = () => {
         <div className='is-ancestor'>
           <div className='tile is-parent is-12'>
             <div className='tile box'>
-              {statistics.map((item) => (
-                <article key={item.key} className='tile is-child is-2'>
-                  <div className='level-item has-text-centered'>
-                    <div>
-                      <p className='heading'>{item.description}</p>
-                      <p className='title'>
-                        <Number>{item.value}</Number>
-                      </p>
+              {statistics
+                .filter((item) => item.type === 'count')
+                .map((item) => (
+                  <article key={item.id} className='tile is-child is-2'>
+                    <div className='level-item has-text-centered'>
+                      <div>
+                        <p className='heading'>{item.name}</p>
+                        <p className='title'>
+                          <Number>{item.value}</Number>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                ))}
             </div>
           </div>
         </div>

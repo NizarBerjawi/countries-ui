@@ -95,8 +95,8 @@ export type FeatureClass = Resource<{
 }>;
 
 export type StatisticsResource = Resource<{
-  key: string;
-  description: string;
-  value: number;
+  id: string;
   type: 'count' | 'sum';
+  name: string;
+  value: number;
 }>;
